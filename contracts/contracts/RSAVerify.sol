@@ -1,23 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract RSAVerification {
+contract JWTRSAVerification {
     function verify(
-        uint256 _D,
-        uint256 _C,
-        uint256 _c,
-        uint256 _h,
-        uint256 _z,
-        uint256 _g,
-        uint256 _l,
+        bytes32 _message,
+        uint256 _signature,
+        uint256 _exponent,
         uint256 _modulus
     ) public view returns (bool) {
-        uint256 exp1 = modExp(_C, _c, _modulus);
-        uint256 exp2 = modExp(_h, _z, _modulus);
-        uint256 exp3 = modExp(_g, _l, _modulus);
-
-        uint256 result = mulmod(mulmod(exp1, exp2, _modulus), exp3, _modulus);
-        return _D == result;
+        uint256 decrypted = modExp(_signature, _exponent, _modulus);
+        return bytes32(decrypted) == _message;
     }
 
     function modExp(

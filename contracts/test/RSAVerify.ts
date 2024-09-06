@@ -1,45 +1,53 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("RSAVerification", function () {
-  let rsaVerification: any;
+describe("JWTRSAVerification", function () {
+  let jwtRSAVerification: any;
 
   beforeEach(async function () {
-    const RSAVerificationFactory = await ethers.getContractFactory(
-      "RSAVerification"
+    const JWTRSAVerificationFactory = await ethers.getContractFactory(
+      "JWTRSAVerification"
     );
-    rsaVerification = await RSAVerificationFactory.deploy();
-    await rsaVerification.waitForDeployment();
+    jwtRSAVerification = await JWTRSAVerificationFactory.deploy();
+    await jwtRSAVerification.waitForDeployment();
   });
 
-  it("should verify a valid RSA signature", async function () {
-    const modulus = ethers.toBigInt("3233"); // p = 61, q = 53
-    const C = ethers.toBigInt("2790");
-    const c = ethers.toBigInt("17");
-    const h = ethers.toBigInt("1");
-    const z = ethers.toBigInt("0");
-    const g = ethers.toBigInt("1");
-    const l = ethers.toBigInt("0");
+  it("should verify a valid JWT RSA signature", async function () {
+    // Using small prime numbers for modulus
+    const p = 61n;
+    const q = 53n;
+    const modulus = p * q; // 3233
+    const exponent = 17n; // Common small public exponent
 
-    // Calculate D using JavaScript's built-in modular exponentiation
-    function modPow(base: bigint, exponent: bigint, modulus: bigint): bigint {
-      let result = 1n;
-      base = base % modulus;
-      while (exponent > 0n) {
-        if (exponent % 2n === 1n) {
-          result = (result * base) % modulus;
-        }
-        exponent = exponent / 2n;
-        base = (base * base) % modulus;
+    // Choose a small number as our "message hash"
+    const messageNumber = 65n;
+
+    // Convert the message number to bytes32
+    const message = ethers.zeroPadValue(ethers.toBeHex(messageNumber), 32);
+
+    // Calculate signature: message^(1/exponent) mod modulus
+    // In RSA, this is typically done with the private key
+    // We're simulating it by finding a number that, when exponentiated, equals our message
+    let signature = 0n;
+    for (let i = 1n; i < modulus; i++) {
+      if (i ** exponent % modulus === messageNumber) {
+        signature = i;
+        break;
       }
-      return result;
     }
 
-    const D = modPow(C, c, modulus);
+    console.log("Message:", messageNumber.toString());
+    console.log("Signature:", signature.toString());
+    console.log("Modulus:", modulus.toString());
+    console.log("Exponent:", exponent.toString());
 
-    console.log("Calculated D:", D.toString());
+    const result = await jwtRSAVerification.verify(
+      message,
+      signature,
+      exponent,
+      modulus
+    );
 
-    const result = await rsaVerification.verify(D, C, c, h, z, g, l, modulus);
     console.log("Verification result:", result);
 
     expect(result).to.equal(true);
