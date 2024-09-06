@@ -59,10 +59,16 @@ contract JWT {
         return headerStr.substring(kidStart, kidEnd);
     }
 
-    function hash(
+    function hashHeaderAndPayload(
         string memory _header,
         string memory _payload
     ) public pure returns (bytes32) {
         return sha256(abi.encodePacked(_header, ".", _payload));
+    }
+
+    function decodeSignature(
+        string memory _signature
+    ) public pure returns (bytes memory) {
+        return _signature.decode();
     }
 }

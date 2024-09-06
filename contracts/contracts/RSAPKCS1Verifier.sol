@@ -10,9 +10,9 @@ contract RSAPKCS1Verifier {
     /// @return bool True if the signature is valid, false otherwise
     function verify(
         bytes32 _message,
-        bytes calldata _signature,
-        bytes calldata _exponent,
-        bytes calldata _modulus
+        bytes memory _signature,
+        bytes memory _exponent,
+        bytes memory _modulus
     ) public view returns (bool) {
         // Prepare input for the modular exponentiation precompile
         bytes memory input = abi.encodePacked(

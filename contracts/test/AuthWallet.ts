@@ -1,0 +1,24 @@
+import { expect } from "chai";
+import { ethers } from "hardhat";
+import { AuthWallet } from "../typechain-types";
+
+describe("AuthWallet", function () {
+  let authWallet: AuthWallet;
+  const jwt =
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6ImQyNWY4ZGJjZjk3ZGM3ZWM0MDFmMDE3MWZiNmU2YmRhOWVkOWU3OTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2Nzc2MTYyMTksImF1ZCI6IjIyNTg4NDIxNjkwMS1yZm42azc5cmxtdG9hYXAzc2tqZWxicnQzdHA2c3FuNS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwNDg5NTE2NDg0Nzc4NDY0NTE5MCIsIm5vbmNlIjoiY0psNWNNVVlFdHc2QVF4OUFiVU9EUmZjZWNnIiwiZW1haWwiOiJtYWlsaHVyYkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXpwIjoiMjI1ODg0MjE2OTAxLXJmbjZrNzlybG10b2FhcDNza2plbGJydDN0cDZzcW41LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwibmFtZSI6Ikx1Y2FzIEhlbm5pbmciLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUdObXl4WUtybXFkYmdpMjItcjcwSG8wWnc1NnVWWXJlSE9TaTNyTXFsc3l1Z2c9czk2LWMiLCJnaXZlbl9uYW1lIjoiTHVjYXMiLCJmYW1pbHlfbmFtZSI6Ikhlbm5pbmciLCJpYXQiOjE2Nzc2MTY1MTksImV4cCI6MTY3NzYyMDExOSwianRpIjoiOWJkYzZkYzNmYjI5ZTBhNGQ0MGY4ZDU5NGUzOTQ2MGJhMzU0YzY4NyJ9.B5Koqqa9DuAryoNN906itjQJb4GjrpuQQOgriyw5-mK6_OUOJa2zPhFexjYF_UXSd0dkIHu_SDZGJnfzuD_kPT4pmzFDFPkbzJFKOR-sRT-rTpT5EqOtvDyW6N26-KsxBQAkC6GYdJVT8d6udXBOHxMSpM2ZgTkp45810n9FAlc2hB9QU7FmKeBaqWPSKhswZwq0YCagvvFMqSb1JYzQXg3qjtF6DHLSuOngjyeqfqyxfrtQgY4mOfdbBGXEf24XxWahxuPlXLzxnSB6H9awKM9kC2ozYIoiSC5QQdgiGoX_luUcrlo-Ddk-sdo-by161BfdqxjFGOTDA7_J1z_Gfw";
+  const kid = "d25f8dbcf97dc7ec401f0171fb6e6bda9ed9e792";
+  const modulus =
+    "0xc502572c7a3b0d07e22b3b6698316178ac7626a659b04a0987fdcff825f85f55bfff0a440db60554a4f08016e82b38c26dd8f43789b84a0da4f1af7cd23a2b7d25e076dad3f66e6e837306daacb9d25effa1f9a2632b3910f6ea12f7020bed44cb3c5330751d3fb2657ffb4f66fb2a6934e880bc142119947b36b8a8213cd2767eff56d48fc9e32e1671d3033c1fc43a8127d2689fd839e83a2f76c156261600dc8a4ba8477f846054890e958f955d17401898f30a67aca48d7f80e980f6346fac2043e255a85095c6337fa55f9ab00a0716096403ba77018484ac3a1198659716dc98b501fd090a7c1d83016c7da272bae6ff6e591cc18e4445768fcbee3899";
+
+  before(async function () {
+    const AuthWalletFactory = await ethers.getContractFactory("AuthWallet");
+    authWallet = await AuthWalletFactory.deploy();
+    await authWallet.waitForDeployment();
+  });
+
+  it("should validate JWT correctly", async function () {
+    await authWallet.setModulus(kid, modulus);
+    const isValid = await authWallet.validateJWT(jwt);
+    expect(isValid).to.be.true;
+  });
+});

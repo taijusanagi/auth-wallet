@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-
+import crypto from "crypto";
 import { JWT } from "../typechain-types";
 
 describe("JWTDecoder", function () {
@@ -30,8 +30,18 @@ describe("JWTDecoder", function () {
 
   it("should calculate JWT hash correctly", async function () {
     const [header, payload] = await jwtDecoder.split(jwt);
-    const hash = await jwtDecoder.hash(header, payload);
-    expect(hash).to.be.a("string");
-    expect(hash).to.have.lengthOf(66); // 0x + 64 characters for a 32-byte hash
+    const hash = await jwtDecoder.hashHeaderAndPayload(header, payload);
+    const expectedHash = crypto
+      .createHash("sha256")
+      .update(`${header}.${payload}`)
+      .digest();
+    expect(hash).to.equal(`0x${expectedHash.toString("hex")}`);
+  });
+
+  it("should decode signature correctly", async function () {
+    const [_, __, signature] = await jwtDecoder.split(jwt);
+    const decodedSignature = await jwtDecoder.decodeSignature(signature);
+    const expectedSignature = Buffer.from(signature, "base64");
+    expect(decodedSignature).to.equal(`0x${expectedSignature.toString("hex")}`);
   });
 });
