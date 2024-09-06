@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract RSAPKCS1Verifier {
     /// @notice Verifies an RSA signature using PKCS#1 v1.5 padding
     /// @param _message The original message hash (32 bytes)
@@ -45,15 +47,32 @@ contract RSAPKCS1Verifier {
             return false;
         }
 
-        // Extract the message hash from the decrypted signature
-        uint256 hashLength = result.length - paddingEnd - 1;
-        bytes memory extractedHash = new bytes(hashLength);
-        for (uint256 k = 0; k < hashLength; k++) {
-            extractedHash[k] = result[paddingEnd + 1 + k];
+        // Extract the ASN.1-encoded structure (after 0x00)
+        uint256 startIndex = paddingEnd + 1;
+        uint256 asn1EndIndex = result.length;
+
+        // The first 19 bytes after padding are the ASN.1 prefix for SHA-256
+        if (asn1EndIndex - startIndex < 19) {
+            return false; // Not enough data for ASN.1 prefix
         }
 
-        // Compare the extracted hash with the provided message
-        return
-            keccak256(extractedHash) == keccak256(abi.encodePacked(_message));
+        // Extract and verify ASN.1 structure
+        bytes memory asn1Prefix = hex"3031300d060960864801650304020105000420"; // ASN.1 prefix for SHA-256
+        for (uint256 i = 0; i < 19; i++) {
+            if (result[startIndex + i] != asn1Prefix[i]) {
+                return false; // Invalid ASN.1 structure
+            }
+        }
+
+        // Extract the raw SHA-256 hash from the result
+        bytes32 extractedHash;
+        for (uint256 i = 0; i < 32; i++) {
+            extractedHash |=
+                bytes32(result[startIndex + 19 + i] & 0xFF) >>
+                (i * 8);
+        }
+
+        // Compare the extracted hash with the provided message hash
+        return extractedHash == _message;
     }
 }

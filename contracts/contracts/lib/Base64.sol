@@ -9,11 +9,11 @@ library Base64 {
         uint256 len = base64.length;
         require(len > 0, "Empty input");
 
-        // Calculate the output length, handle padding
+        // Check for padding characters and adjust length accordingly
+        if (base64[len - 1] == "=") len--;
+        if (base64[len - 1] == "=") len--;
+
         uint256 outputLen = (len * 3) / 4;
-        if (len % 4 != 0) {
-            outputLen -= 4 - (len % 4);
-        }
 
         bytes memory result = new bytes(outputLen);
         uint256 j = 0;

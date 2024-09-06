@@ -41,7 +41,9 @@ describe("JWTDecoder", function () {
   it("should decode signature correctly", async function () {
     const [_, __, signature] = await jwtDecoder.split(jwt);
     const decodedSignature = await jwtDecoder.decodeSignature(signature);
-    const expectedSignature = Buffer.from(signature, "base64");
-    expect(decodedSignature).to.equal(`0x${expectedSignature.toString("hex")}`);
+    const expectedSignature = `0x${Buffer.from(signature, "base64").toString(
+      "hex"
+    )}`;
+    expect(decodedSignature).to.equal(expectedSignature);
   });
 });
