@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import crypto from "crypto";
 
 describe("JWTRSAVerification", function () {
   let jwtRSAVerification: any;
@@ -13,36 +14,38 @@ describe("JWTRSAVerification", function () {
   });
 
   it("should verify a valid JWT RSA signature", async function () {
-    // Using small prime numbers for modulus
-    const p = 61n;
-    const q = 53n;
-    const modulus = p * q; // 3233
-    const exponent = 17n; // Common small public exponent
+    const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicExponent: 65537,
+    });
 
-    // Choose a small number as our "message hash"
-    const messageNumber = 65n;
+    const message =
+      "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0";
+    const messageHash = crypto.createHash("sha256").update(message).digest();
 
-    // Convert the message number to bytes32
-    const message = ethers.zeroPadValue(ethers.toBeHex(messageNumber), 32);
+    // Create signature with PKCS#1 v1.5 padding
+    const signature = crypto.privateEncrypt(
+      {
+        key: privateKey,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      messageHash
+    );
 
-    // Calculate signature: message^(1/exponent) mod modulus
-    // In RSA, this is typically done with the private key
-    // We're simulating it by finding a number that, when exponentiated, equals our message
-    let signature = 0n;
-    for (let i = 1n; i < modulus; i++) {
-      if (i ** exponent % modulus === messageNumber) {
-        signature = i;
-        break;
-      }
-    }
+    const publicKeyData = publicKey.export({
+      format: "jwk",
+    });
 
-    console.log("Message:", messageNumber.toString());
-    console.log("Signature:", signature.toString());
-    console.log("Modulus:", modulus.toString());
-    console.log("Exponent:", exponent.toString());
+    const modulus = Buffer.from(publicKeyData.n!, "base64url");
+    const exponent = Buffer.from(publicKeyData.e!, "base64url");
+
+    console.log("Message Hash:", messageHash.toString("hex"));
+    console.log("Signature:", signature.toString("hex"));
+    console.log("Modulus:", modulus.toString("hex"));
+    console.log("Exponent:", exponent.toString("hex"));
 
     const result = await jwtRSAVerification.verify(
-      message,
+      "0x" + messageHash.toString("hex"),
       signature,
       exponent,
       modulus

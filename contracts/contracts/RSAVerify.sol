@@ -1,38 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract JWTRSAVerification {
     function verify(
         bytes32 _message,
-        uint256 _signature,
-        uint256 _exponent,
-        uint256 _modulus
+        bytes memory _signature,
+        bytes memory _exponent,
+        bytes memory _modulus
     ) public view returns (bool) {
-        uint256 decrypted = modExp(_signature, _exponent, _modulus);
-        return bytes32(decrypted) == _message;
-    }
+        bytes memory input = abi.encodePacked(
+            uint256(_signature.length),
+            uint256(_exponent.length),
+            uint256(_modulus.length),
+            _signature,
+            _exponent,
+            _modulus
+        );
 
-    function modExp(
-        uint256 _b,
-        uint256 _e,
-        uint256 _m
-    ) public view returns (uint256 result) {
-        assembly {
-            let p := mload(0x40)
-            mstore(p, 0x20)
-            mstore(add(p, 0x20), 0x20)
-            mstore(add(p, 0x40), 0x20)
-            mstore(add(p, 0x60), _b)
-            mstore(add(p, 0x80), _e)
-            mstore(add(p, 0xa0), _m)
-            let success := staticcall(gas(), 0x05, p, 0xc0, p, 0x20)
-            switch success
-            case 0 {
-                revert(0, 0)
-            }
-            default {
-                result := mload(p)
-            }
+        (bool success, bytes memory result) = address(0x05).staticcall(input);
+        require(success, "Modular exponentiation failed");
+
+        if (result.length < 11 || result[0] != 0x00 || result[1] != 0x01) {
+            console.log("Invalid padding start");
+            return false;
         }
+
+        uint256 paddingEnd = 2;
+        while (paddingEnd < result.length && result[paddingEnd] == 0xFF) {
+            paddingEnd++;
+        }
+
+        if (paddingEnd + 1 >= result.length || result[paddingEnd] != 0x00) {
+            console.log("Invalid padding end");
+            return false;
+        }
+
+        bytes memory extractedHash = new bytes(result.length - paddingEnd - 1);
+        for (uint256 k = 0; k < extractedHash.length; k++) {
+            extractedHash[k] = result[paddingEnd + 1 + k];
+        }
+
+        return
+            keccak256(extractedHash) == keccak256(abi.encodePacked(_message));
     }
 }
