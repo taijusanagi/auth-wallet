@@ -1,6 +1,6 @@
 const url =
   process.env.NODE_ENV == "production"
-    ? "https://auth-wallet.vercel.app/"
+    ? "https://auth-wallet.vercel.app"
     : "http://localhost:3000";
 
 export const handlePopup = async (
@@ -25,6 +25,8 @@ export const handlePopup = async (
 
   return new Promise((resolve, reject) => {
     const handleMessage = (event: MessageEvent) => {
+      console.log("event", event);
+
       if (event.origin !== url) {
         return;
       }
