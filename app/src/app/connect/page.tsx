@@ -1,7 +1,11 @@
-export default function Connect() {
+import { Connect } from "@/components/Connect";
+
+export default function ConnectPage() {
   return (
     <div>
-      <main>Connect</main>
+      <main>
+        <Connect />
+      </main>
     </div>
   );
 }

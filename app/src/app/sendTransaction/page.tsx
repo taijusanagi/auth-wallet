@@ -1,4 +1,4 @@
-export default function SendTransaction() {
+export default function SendTransactionPage() {
   return (
     <div>
       <main>SendTransaction</main>

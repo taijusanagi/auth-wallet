@@ -1,6 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div>
       <header>
