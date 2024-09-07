@@ -4,7 +4,7 @@ import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { fromHex, parseEther } from "viem";
+import { parseEther } from "viem";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
