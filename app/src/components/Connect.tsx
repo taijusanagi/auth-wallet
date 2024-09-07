@@ -10,14 +10,14 @@ import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory"
 import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
 
 export const Connect = () => {
-  const [aud, setAud] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     (async function () {
-      if (!aud || !email) {
+      if (!email) {
         return;
       }
+      const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
       const address = await baseSepoliaPublicClient.readContract({
         abi: AuthWalletFactoryAbi,
         address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
@@ -25,13 +25,12 @@ export const Connect = () => {
         args: [aud, email, BigInt(0)],
       });
       window.localStorage.setItem("address", address);
-      window.localStorage.setItem("aud", aud);
       window.localStorage.setItem("email", email);
       if (window.opener && window.opener.parent) {
         window.opener.parent.postMessage({ type: "address", address }, "*");
       }
     })();
-  }, [aud, email]);
+  }, [email]);
 
   return (
     <GoogleLogin
@@ -40,13 +39,12 @@ export const Connect = () => {
           throw new Error("No credential");
         }
         const decodedCredential = jwt.decode(credential) as jwt.JwtPayload;
-        if (typeof decodedCredential.aud != "string") {
+        if (decodedCredential.aud !== process.env.NEXT_PUBLIC_CLIENT_ID) {
           throw new Error("Invalid audience");
         }
         if (typeof decodedCredential.email != "string") {
           throw new Error("Invalid email");
         }
-        setAud(decodedCredential.aud);
         setEmail(decodedCredential.email);
       }}
     />

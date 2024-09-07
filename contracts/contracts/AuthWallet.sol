@@ -38,6 +38,8 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
         initialize(_aud, _email);
     }
 
+    receive() external payable {}
+
     function initialize(
         string memory _aud,
         string memory _email

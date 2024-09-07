@@ -23,13 +23,12 @@ export const SendTransaction = () => {
 
   useEffect(() => {
     if (window.opener && window.opener.parent) {
-      const aud = window.localStorage.getItem("aud");
       const email = window.localStorage.getItem("email");
       const address = window.localStorage.getItem("address");
-      if (!aud || !email || !address) {
+      if (!email || !address) {
         return;
       }
-
+      const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
       const handleTransactionMessage = async (event: MessageEvent) => {
         if (event.data.type == "sendTransaction") {
           const { from, to, value, data } = event.data;

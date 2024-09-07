@@ -1,5 +1,5 @@
-import { ExampleApp } from "@/components/ExampleApp";
+import { AuthWalletApp } from "@/components/AuthWalletApp";
 
 export default function HomePage() {
-  return <ExampleApp />;
+  return <AuthWalletApp />;
 }
