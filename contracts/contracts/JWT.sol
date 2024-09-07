@@ -41,28 +41,56 @@ contract JWT {
         return (header, payload, signature);
     }
 
+    function hashHeaderAndPayload(
+        string memory _header,
+        string memory _payload
+    ) public pure returns (bytes32) {
+        return sha256(abi.encodePacked(_header, ".", _payload));
+    }
+
     function getKidFromHeader(
         string memory _header
     ) public pure returns (string memory) {
         bytes memory decodedHeader = _header.decode();
         string memory headerStr = string(decodedHeader);
 
-        bytes memory kidKey = '"kid":"';
-        uint256 kidStart = headerStr.indexOf(kidKey) + kidKey.length;
-        require(kidStart > kidKey.length, "kid not found in header");
-
-        uint256 kidEnd = headerStr
-            .substring(kidStart, bytes(headerStr).length - kidStart)
-            .indexOf('"');
-        require(kidEnd != type(uint256).max, "Invalid kid format");
-
-        return headerStr.substring(kidStart, kidEnd);
+        return getValueByKeyFromJson(headerStr, "kid");
     }
 
-    function hashHeaderAndPayload(
-        string memory _header,
+    function getAudAndEmailAndNonceFromPayload(
         string memory _payload
-    ) public pure returns (bytes32) {
-        return sha256(abi.encodePacked(_header, ".", _payload));
+    ) public pure returns (string memory, string memory, string memory) {
+        // Decode the payload from Base64
+        bytes memory decodedPayload = _payload.decode();
+        string memory payloadStr = string(decodedPayload);
+
+        // Get the values of 'aud', 'email', and 'nonce'
+        string memory aud = getValueByKeyFromJson(payloadStr, "aud");
+        string memory email = getValueByKeyFromJson(payloadStr, "email");
+        string memory nonce = getValueByKeyFromJson(payloadStr, "nonce");
+
+        return (aud, email, nonce);
+    }
+
+    function getValueByKeyFromJson(
+        string memory _json,
+        string memory _key
+    ) public pure returns (string memory) {
+        bytes memory keyBytes = abi.encodePacked('"', _key, '":"');
+        uint256 valueStart = _json.indexOf(keyBytes) + keyBytes.length;
+        require(
+            valueStart > keyBytes.length,
+            string(abi.encodePacked(_key, " not found in JSON"))
+        );
+
+        uint256 valueEnd = _json
+            .substring(valueStart, bytes(_json).length - valueStart)
+            .indexOf('"');
+        require(
+            valueEnd != type(uint256).max,
+            string(abi.encodePacked("Invalid ", _key, " format"))
+        );
+
+        return _json.substring(valueStart, valueEnd);
     }
 }

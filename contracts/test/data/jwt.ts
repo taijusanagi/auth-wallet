@@ -5,3 +5,10 @@ export const kid = "b2f80c634600ed13072101a8b4220443433db282";
 
 export const modulus =
   "1rT4OUZfqfra6qUP07ZInRj7GsobWmDcmEu5K4HdYJoqCw_lxejxqRyUNtbnJXiKoJwFbnl_KHwTHA04v3Vkqh-zy03Yk8Ft4uGi7PYs1niZU6ZbpW3V8QqY1TMFVLRJgartw0Pjg7hIWoyv5QnQkuVjVZZ-MhnuQRxKghizCVl6IZWV4vemm5_llbtuN0ex4DmgA1GI8wrjdtWOoff1ybl_AwBwQlyQ9XmWru_Ea3MWHhii7sepWLk21wu_7iyUHw0VUBL8E-eM4ZeCfkTUt6ZpTw45aPIgIJC0m-cpscK2lmC-DG_irif14NtyrxfwF-cwSOLhzQVg1diPeWPH1Q";
+
+export const aud =
+  "831675566819-pnmr5spfvvnb98v44n6tf6nhn4feslb5.apps.googleusercontent.com";
+
+export const email = "taijusanagi@gmail.com";
+
+export const nonce = "123";

@@ -3,7 +3,13 @@ import { ethers } from "hardhat";
 import crypto from "crypto";
 import { JWT } from "../typechain-types";
 
-import { jwt, kid } from "./data/jwt";
+import {
+  jwt,
+  kid,
+  aud as expectedAud,
+  nonce as expectedNonce,
+  email as expectedEmail,
+} from "./data/jwt";
 
 describe("JWT", function () {
   let jwtDecoder: JWT;
@@ -25,6 +31,15 @@ describe("JWT", function () {
   it("should extract kid correctly", async function () {
     const [header] = await jwtDecoder.split(jwt);
     expect(await jwtDecoder.getKidFromHeader(header)).to.equal(kid);
+  });
+
+  it("should extract aud, email, and nonce", async function () {
+    const [_, payload] = await jwtDecoder.split(jwt);
+    const [aud, email, nonce] =
+      await jwtDecoder.getAudAndEmailAndNonceFromPayload(payload);
+    expect(aud).to.equal(expectedAud);
+    expect(email).to.equal(expectedEmail);
+    expect(nonce).to.equal(expectedNonce);
   });
 
   it("should calculate JWT hash correctly", async function () {
