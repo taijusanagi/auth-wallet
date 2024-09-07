@@ -15,9 +15,6 @@ import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedC
 import { entryPointAddress } from "../../../contracts/externalContractAddress";
 
 export const SendTransaction = () => {
-  const [aud, setAud] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
   const [to, setTo] = useState("");
   const [value, setValue] = useState("");
   const [data, setData] = useState("");
@@ -32,9 +29,7 @@ export const SendTransaction = () => {
       if (!aud || !email || !address) {
         return;
       }
-      setAud(aud);
-      setEmail(email);
-      setAddress(address);
+
       const handleTransactionMessage = async (event: MessageEvent) => {
         if (event.data.type == "sendTransaction") {
           const { from, to, value, data } = event.data;
