@@ -1,7 +1,15 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { AuthWallet, JWKSAutomatedOracleMock } from "../typechain-types";
-import { jwt, kid, modulus } from "./data/jwt";
+import {
+  aud,
+  email,
+  jwt,
+  kid,
+  modulus,
+  nonce as expectedNonce,
+} from "./data/jwt";
+import { entryPointAddress } from "../externalContractAddress";
 
 describe("AuthWallet", function () {
   let authWallet: AuthWallet;
@@ -16,13 +24,19 @@ describe("AuthWallet", function () {
     const jwksAutomatedOracleMockAddress =
       await jwksAutomatedOracleMock.getAddress();
     const AuthWalletFactory = await ethers.getContractFactory("AuthWallet");
-    authWallet = await AuthWalletFactory.deploy(jwksAutomatedOracleMockAddress);
+    authWallet = await AuthWalletFactory.deploy(
+      entryPointAddress,
+      jwksAutomatedOracleMockAddress,
+      aud,
+      email
+    );
     await authWallet.waitForDeployment();
   });
 
   it("should validate JWT correctly", async function () {
     await jwksAutomatedOracleMock.setModulus(kid, modulus);
-    const isValid = await authWallet.validateJWT(jwt);
+    const [isValid, nonce] = await authWallet.validateJWT(jwt);
     expect(isValid).to.be.true;
+    expect(nonce).to.equal(expectedNonce);
   });
 });
