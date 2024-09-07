@@ -7,6 +7,8 @@ import "./RSAPKCS1Verifier.sol";
 import "hardhat/console.sol";
 
 contract AuthWallet is JWT, RSAPKCS1Verifier {
+    using Base64 for string;
+
     // Hardcoded exponent (common value for RSA public exponent)
     bytes public constant EXPONENT = hex"010001"; // 65537 in hexadecimal
 
@@ -17,9 +19,10 @@ contract AuthWallet is JWT, RSAPKCS1Verifier {
     event ModulusSet(string indexed kid, bytes modulus);
 
     // Function to set modulus for a specific kid
-    function setModulus(string memory _kid, bytes calldata _modulus) public {
-        kidToModulus[_kid] = _modulus;
-        emit ModulusSet(_kid, _modulus);
+    function setModulus(string memory _kid, string memory _modulus) public {
+        bytes memory decodedModulus = _modulus.decode();
+        kidToModulus[_kid] = decodedModulus;
+        emit ModulusSet(_kid, decodedModulus);
     }
 
     // Function to validate JWT
@@ -32,7 +35,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier {
         ) = split(_jwt);
 
         // Extract the kid from the header
-        string memory kid = extractKid(header);
+        string memory kid = getKidFromHeader(header);
 
         // Get the modulus for the kid
         bytes memory modulus = kidToModulus[kid];
@@ -41,8 +44,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier {
         // Hash the header and payload
         bytes32 messageHash = hashHeaderAndPayload(header, payload);
 
-        // Decode the signature
-        bytes memory decodedSignature = decodeSignature(signature);
+        bytes memory decodedSignature = signature.decode();
 
         // Verify the signature
         return verify(messageHash, decodedSignature, EXPONENT, modulus);

@@ -41,7 +41,7 @@ contract JWT {
         return (header, payload, signature);
     }
 
-    function extractKid(
+    function getKidFromHeader(
         string memory _header
     ) public pure returns (string memory) {
         bytes memory decodedHeader = _header.decode();
@@ -64,11 +64,5 @@ contract JWT {
         string memory _payload
     ) public pure returns (bytes32) {
         return sha256(abi.encodePacked(_header, ".", _payload));
-    }
-
-    function decodeSignature(
-        string memory _signature
-    ) public pure returns (bytes memory) {
-        return _signature.decode();
     }
 }
