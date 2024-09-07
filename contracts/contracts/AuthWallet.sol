@@ -127,8 +127,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        // (bool isValid, bytes32 nonce) = validateJWT(string(userOp.signature));
-        // return (isValid && nonce == userOpHash) ? 0 : SIG_VALIDATION_FAILED;
-        return 0;
+        (bool isValid, bytes32 nonce) = validateJWT(string(userOp.signature));
+        return (isValid && nonce == userOpHash) ? 0 : SIG_VALIDATION_FAILED;
     }
 }
