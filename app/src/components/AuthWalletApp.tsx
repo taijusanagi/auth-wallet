@@ -1,7 +1,8 @@
 "use client";
 
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
-import { Key, Shield, Wallet } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
@@ -69,80 +70,6 @@ export const AuthWalletApp = () => {
     }
   };
 
-  const LandingPage = () => (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-      <section className="text-center">
-        <Wallet className="inline-block text-indigo-600 mb-4" size={64} />
-        <h1 className="text-4xl font-bold text-indigo-600 mb-4">AuthWallet</h1>
-        <p className="text-xl text-gray-600">
-          Secure, Simple, and Smart Wallet Management
-        </p>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-indigo-600">
-          Problem & Motivation
-        </h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <Wallet className="text-indigo-600 mb-2" size={24} />
-              <h3 className="font-semibold mb-2">Complex Wallet Management</h3>
-              <p className="text-sm text-gray-600">
-                Traditional wallet management is often complex and intimidating
-                for new users.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <Shield className="text-indigo-600 mb-2" size={24} />
-              <h3 className="font-semibold mb-2">Advanced but Complicated</h3>
-              <p className="text-sm text-gray-600">
-                New technologies like MPC reduce risks but introduce complex
-                concepts.
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="bg-white/80 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <Key className="text-indigo-600 mb-2" size={24} />
-              <h3 className="font-semibold mb-2">Simplicity Needed</h3>
-              <p className="text-sm text-gray-600">
-                There's a need for a simple yet secure enough wallet solution.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-semibold text-indigo-600">Our Solution</h2>
-        <Card className="bg-white/80 backdrop-blur-sm">
-          <CardContent className="pt-6 space-y-4">
-            <p>• OAuth2.0 based Account Abstraction wallet</p>
-            <p>• JWT verification with RSA in smart contracts</p>
-            <p>
-              • Smart contracts function similarly to web2 server authentication
-            </p>
-          </CardContent>
-        </Card>
-      </section>
-
-      <Card className="bg-white/80 backdrop-blur-sm text-center">
-        <CardContent className="pt-6">
-          <p className="mb-4">Connect your wallet to get started</p>
-          <Button
-            onClick={handleConnect}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-          >
-            Connect Wallet
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <header className="bg-white shadow-sm">
@@ -161,7 +88,7 @@ export const AuthWalletApp = () => {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
         {isConnected ? (
           <>
             <Card className="bg-white/80 backdrop-blur-sm">
@@ -171,7 +98,7 @@ export const AuthWalletApp = () => {
               <CardContent className="space-y-2">
                 <div>
                   <Label>Address:</Label>
-                  <div className="text-xs md:text-base">{address}</div>
+                  <div className="text-xs lg:text-base">{address}</div>
                 </div>
                 <div>
                   <Label>Balance:</Label>
@@ -226,7 +153,121 @@ export const AuthWalletApp = () => {
             </Card>
           </>
         ) : (
-          <LandingPage />
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <Wallet className="inline-block text-indigo-600 mb-6" size={80} />
+              <h1 className="text-5xl font-bold text-indigo-600 mb-6">
+                AuthWallet
+              </h1>
+              <p className="text-2xl text-gray-700">
+                Revolutionizing Wallet Management with Simplicity and Security
+              </p>
+            </motion.section>
+
+            <section className="space-y-8">
+              <h2 className="text-3xl font-bold text-indigo-600 text-center mb-8">
+                Addressing Key Challenges
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {[
+                  {
+                    icon: Wallet,
+                    title: "Wallet Complexity",
+                    description:
+                      "Managing private keys, seed phrases, and multiple accounts is overwhelmingly complex for most users.",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Security vs. Usability",
+                    description:
+                      "Advanced solutions like MPC wallets provide security but are too complicated for average users to adopt.",
+                  },
+                  {
+                    icon: Lightbulb,
+                    title: "The Need for Simplicity",
+                    description:
+                      "A secure and user-friendly wallet solution is desperately needed. This is where AuthWallet steps in to bridge the gap.",
+                  },
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Card className="bg-white/90 backdrop-blur-sm shadow-lg h-full">
+                      <CardContent className="p-6 flex flex-col items-center h-full">
+                        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 mb-4">
+                          <item.icon className="text-indigo-600" size={32} />
+                        </div>
+                        <h3 className="text-xl font-semibold mb-3 text-indigo-700 text-center">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-600 text-center flex-grow">
+                          {item.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="space-y-8"
+            >
+              <h2 className="text-3xl font-bold text-indigo-600 text-center mb-8">
+                Our Innovative Solution
+              </h2>
+              <Card className="bg-white/90 backdrop-blur-sm shadow-lg">
+                <CardContent className="p-8 space-y-6">
+                  {[
+                    "Leveraging OAuth2.0 and OpenID Connect: Web2's gold standard for authorization",
+                    "Smart contracts as Web2 servers: Bringing familiar auth to Account Abstraction wallets",
+                    "Secure on-chain verification: Implementing JWT and RSA in smart contracts",
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex items-center space-x-4"
+                    >
+                      <ArrowRight className="text-indigo-600 flex-shrink-0" />
+                      <p className="text-lg text-gray-700">{item}</p>
+                    </motion.div>
+                  ))}
+                </CardContent>
+              </Card>
+            </motion.section>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Card className="bg-indigo-600 text-white text-center shadow-xl">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold mb-4">
+                    Ready to Experience the Future of Wallet Management?
+                  </h3>
+                  <p className="mb-6 text-indigo-100">
+                    Connect your wallet and start your journey with AuthWallet
+                    today!
+                  </p>
+                  <Button
+                    onClick={handleConnect}
+                    className="bg-white text-indigo-600 hover:bg-indigo-100 font-semibold py-2 px-6 rounded-full text-lg transition duration-300"
+                  >
+                    Connect Wallet
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         )}
       </main>
     </div>
