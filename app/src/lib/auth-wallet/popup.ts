@@ -25,8 +25,6 @@ export const handlePopup = async (
 
   return new Promise((resolve, reject) => {
     const handleMessage = (event: MessageEvent) => {
-      console.log("event", event);
-
       if (event.origin !== url) {
         return;
       }
