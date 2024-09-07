@@ -4,7 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import jwt from "jsonwebtoken";
 import { useEffect, useState } from "react";
 
-import { publicClients } from "@/lib/public-clients";
+import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
 import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
@@ -18,13 +18,15 @@ export const Connect = () => {
       if (!aud || !email) {
         return;
       }
-      const address = await publicClients["84532"].readContract({
+      const address = await baseSepoliaPublicClient.readContract({
         abi: AuthWalletFactoryAbi,
         address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
         functionName: "getDeployedAddress",
         args: [aud, email, BigInt(0)],
       });
       window.localStorage.setItem("address", address);
+      window.localStorage.setItem("aud", aud);
+      window.localStorage.setItem("email", email);
       if (window.opener && window.opener.parent) {
         window.opener.parent.postMessage({ type: "address", address }, "*");
       }
