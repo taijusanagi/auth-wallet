@@ -1,8 +1,8 @@
 const url = "http://localhost:3000";
 
 export const handlePopup = async (
-  path: string,
-  expectedType: string,
+  requestType: string,
+  responseType: string,
   messageData?: unknown,
 ) => {
   const width = 400;
@@ -11,7 +11,7 @@ export const handlePopup = async (
   const top = window.screenY + (window.innerHeight - height) / 2;
 
   const popup = window.open(
-    `${url}/${path}`,
+    `${url}/${requestType}`,
     "_blank",
     `width=${width},height=${height},top=${top},left=${left}`,
   );
@@ -26,16 +26,15 @@ export const handlePopup = async (
         return;
       }
 
-      if (
+      if (event.data && event.data.type === "ready" && messageData) {
+        popup.postMessage({ type: requestType, ...messageData }, "*");
+      } else if (
         event.data &&
-        event.data.type === "status" &&
-        event.data.status === "ready" &&
-        messageData
+        event.data.type == responseType &&
+        event.data[responseType]
       ) {
-        popup.postMessage(messageData, "*");
-      } else if (event.data && event.data[expectedType]) {
         window.removeEventListener("message", handleMessage);
-        resolve(event.data[expectedType]);
+        resolve(event.data[responseType]);
         popup.close();
       }
     };

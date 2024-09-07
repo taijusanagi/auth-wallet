@@ -12,7 +12,11 @@ export const ExampleApp = () => {
 
   return (
     <>
-      <ConnectButton />
+      <ConnectButton
+        showBalance={false}
+        chainStatus={"none"}
+        accountStatus={"full"}
+      />
       {isConnected && (
         <Button
           onClick={async () => {

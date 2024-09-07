@@ -40,11 +40,7 @@ export class AuthWalletProvider implements EIP1193Provider {
           value: Hex;
           data?: Hex;
         }>;
-        return handlePopup("sendTransaction", "transactionHash", {
-          to: transaction.to,
-          value: transaction.value,
-          data: transaction.data,
-        });
+        return handlePopup("sendTransaction", "transactionHash", transaction);
       default:
         throw new Error(
           `Request rethod:${args.method} not implemented in CustomProvider`,

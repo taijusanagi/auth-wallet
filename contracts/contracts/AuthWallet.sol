@@ -19,6 +19,14 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
 
     bytes public constant EXPONENT = hex"010001"; // 65537 in hexadecimal
 
+    modifier onlyEntryPoint() {
+        require(
+            msg.sender == address(entryPoint()),
+            "EthDriveAccount: not EntryPoint"
+        );
+        _;
+    }
+
     constructor(
         IEntryPoint entryPoint_,
         JWKSAutomatedOracle _jwksAutomatedOracle,
@@ -40,6 +48,37 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
         );
         aud = _aud;
         email = _email;
+    }
+
+    function execute(
+        address to,
+        uint256 value,
+        bytes calldata data
+    ) public onlyEntryPoint {
+        _call(to, value, data);
+    }
+
+    function executeBatch(
+        address[] calldata to,
+        uint256[] calldata value,
+        bytes[] calldata data
+    ) public onlyEntryPoint {
+        require(
+            to.length == data.length && value.length == data.length,
+            "wrong array lengths"
+        );
+        for (uint256 i = 0; i < data.length; i++) {
+            _call(to[i], value[i], data[i]);
+        }
+    }
+
+    function _call(address target, uint256 value, bytes memory data) internal {
+        (bool success, bytes memory result) = target.call{value: value}(data);
+        if (!success) {
+            assembly {
+                revert(add(result, 32), mload(result))
+            }
+        }
     }
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
