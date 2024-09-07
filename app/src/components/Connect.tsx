@@ -38,6 +38,7 @@ export const Connect = () => {
         if (!credential) {
           throw new Error("No credential");
         }
+        console.log("idToken", credential);
         const decodedCredential = jwt.decode(credential) as jwt.JwtPayload;
         if (decodedCredential.aud !== process.env.NEXT_PUBLIC_CLIENT_ID) {
           throw new Error("Invalid audience");
