@@ -10,7 +10,6 @@ import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/l
 import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
 
 contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
-    using Base64 for string;
     using FunctionsRequest for FunctionsRequest.Request;
 
     error UnexpectedRequestID(bytes32 requestId);

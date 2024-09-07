@@ -4,24 +4,18 @@ pragma solidity ^0.8.0;
 import "./JWT.sol";
 import "./RSAPKCS1Verifier.sol";
 
-import "hardhat/console.sol";
+import "./JWKSAutomatedOracle.sol";
 
 contract AuthWallet is JWT, RSAPKCS1Verifier {
     using Base64 for string;
 
+    JWKSAutomatedOracle public jwksAutomatedOracle;
     // Hardcoded exponent (common value for RSA public exponent)
     bytes public constant EXPONENT = hex"010001"; // 65537 in hexadecimal
 
-    // Mapping to store modulus for each kid
-    mapping(string => bytes) public kidToModulus;
-
-    // Event to log when a new modulus is set
-    event ModulusSet(string indexed kid, bytes modulus);
-
-    // Function to set modulus for a specific kid
-    function setModulus(string memory _kid, bytes memory _modulus) public {
-        kidToModulus[_kid] = _modulus;
-        emit ModulusSet(_kid, _modulus);
+    constructor(JWKSAutomatedOracle _jwksAutomatedOracle) {
+        // Set the JWKSAutomatedOracle contract
+        jwksAutomatedOracle = _jwksAutomatedOracle;
     }
 
     // Function to validate JWT
@@ -37,7 +31,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier {
         string memory kid = getKidFromHeader(header);
 
         // Get the modulus for the kid
-        bytes memory modulus = kidToModulus[kid];
+        bytes memory modulus = jwksAutomatedOracle.kidToModulus(kid);
         require(modulus.length > 0, "Modulus not found for the given kid");
 
         // Hash the header and payload
