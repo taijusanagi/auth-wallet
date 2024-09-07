@@ -40,9 +40,10 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         "const jwk = data.keys.find((jwk) => jwk.kid == kid);"
         "return Buffer.from(jwk.n, 'base64');";
 
+    bytes32 public donID;
     uint64 public subscriptionId;
     uint32 public gasLimit;
-    bytes32 public donID;
+
     bytes32 public s_lastRequestId;
 
     // Chainlink Automation Data
@@ -54,34 +55,34 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
     mapping(string => bytes) public kidToModulus;
 
     constructor(
-        address router,
+        address _router,
+        bytes32 _donID,
         uint64 _subscriptionId,
-        uint32 _gasLimit,
-        bytes32 _donID
-    ) FunctionsClient(router) {
+        uint32 _gasLimit
+    ) FunctionsClient(_router) {
+        donID = _donID;
         subscriptionId = _subscriptionId;
         gasLimit = _gasLimit;
-        donID = _donID;
     }
 
     // Chainlink Functions Methods
     function fulfillRequest(
-        bytes32 requestId,
-        bytes memory response,
-        bytes memory err
+        bytes32 _requestId,
+        bytes memory _response,
+        bytes memory
     ) internal override {
-        if (s_lastRequestId != requestId) {
-            revert UnexpectedRequestID(requestId);
+        if (s_lastRequestId != _requestId) {
+            revert UnexpectedRequestID(_requestId);
         }
         if (bytes(processingKid).length == 0) {
-            _setProcessingKid(string(response));
+            _setProcessingKid(string(_response));
             _requestModulus();
         } else {
-            _setModulus(response);
+            _setModulus(_response);
         }
     }
 
-    function _requestKid() internal returns (bytes32 requestId) {
+    function _requestKid() internal returns (bytes32) {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(kidSource);
         s_lastRequestId = _sendRequest(
@@ -93,7 +94,7 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         return s_lastRequestId;
     }
 
-    function _requestModulus() internal returns (bytes32 requestId) {
+    function _requestModulus() internal returns (bytes32) {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(modulusSource);
         string[] memory args = new string[](1);
