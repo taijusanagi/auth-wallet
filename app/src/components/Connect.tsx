@@ -26,7 +26,9 @@ export const Connect = () => {
       });
       window.localStorage.setItem("address", address);
       window.localStorage.setItem("email", email);
+      console.log("send message 1");
       if (window.opener && window.opener.parent) {
+        console.log("send message 2");
         window.opener.parent.postMessage({ type: "address", address }, "*");
       }
     })();
