@@ -1,9 +1,12 @@
 "use client";
 
 import { GoogleLogin } from "@react-oauth/google";
-import { useEffect, useState } from "react";
-import { encodeFunctionData, toHex } from "viem";
+import { Loader2, Wallet } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Hex, encodeFunctionData, formatEther, fromHex, toHex } from "viem";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { baseSepoliaPublicClient } from "@/lib/clients";
 import { sampleJWT } from "@/lib/jwt";
 import { request } from "@/lib/rpc";
@@ -20,6 +23,8 @@ export const SendTransaction = () => {
   const [data, setData] = useState("");
   const [userOp, setUserOp] = useState<any>();
   const [userOpHash, setUserOpHash] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("");
 
   useEffect(() => {
     if (window.opener && window.opener.parent) {
@@ -151,66 +156,159 @@ export const SendTransaction = () => {
     }
   }, []);
 
+  const handleClose = () => {
+    if (window.opener && window.opener.parent) {
+      window.opener.parent.postMessage(
+        { type: "transactionHash", transactionHash },
+        "*",
+      );
+    }
+    window.close();
+  };
+
+  const TransactionPreview = () => (
+    <div className="mb-4 text-left space-y-2">
+      <div className="flex flex-col">
+        <span className="font-semibold text-sm">To:</span>
+        <span className="text-sm break-all">{to}</span>
+      </div>
+      <div className="flex flex-col">
+        <span className="font-semibold text-sm">Value:</span>
+        <span className="text-sm break-all">
+          {formatEther(fromHex(value as Hex, "bigint"))} ETH
+        </span>
+      </div>
+      <div className="flex flex-col">
+        <span className="font-semibold text-sm">Data:</span>
+        <span className="text-sm break-all">{data}</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div>
-      <p>{to}</p>
-      <p>{value}</p>
-      <p>{data}</p>
-      {userOp && userOpHash && (
-        <GoogleLogin
-          nonce={userOpHash}
-          onSuccess={async ({ credential }) => {
-            if (!credential) {
-              throw new Error("No credential");
-            }
-            userOp.signature = toHex(credential);
-            const ethSendUserOperationRes = await fetch("/bundler", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                id: 1,
-                jsonrpc: "2.0",
-                method: "eth_sendUserOperation",
-                params: [userOp, entryPointAddress],
-              }),
-            }).then((res) => res.json());
-            console.log("ethSendUserOperationRes", ethSendUserOperationRes);
-            const requestId = ethSendUserOperationRes.result;
+    <div className="w-[400px] h-[600px] bg-gradient-to-br from-blue-100 to-indigo-200 p-4 flex flex-col">
+      <header className="bg-white/90 backdrop-blur-sm shadow-md rounded-2xl mb-8">
+        <div className="px-6 py-4 flex justify-center items-center">
+          <Wallet className="text-indigo-600 mr-2" size={24} />
+          <h1 className="text-2xl font-semibold text-indigo-600">AuthWallet</h1>
+        </div>
+      </header>
 
-            const pollReceipt = async (requestId: string): Promise<any> => {
-              return new Promise((resolve, reject) => {
-                const interval = setInterval(async () => {
-                  console.log("pollReceipt... ", requestId);
-                  const userOperationReceipt = await request(
-                    "eth_getUserOperationReceipt",
-                    [requestId],
-                  );
-                  if (userOperationReceipt.error) {
-                    clearInterval(interval);
-                    reject(userOperationReceipt.error.message);
-                  }
-                  if (userOperationReceipt.result) {
-                    clearInterval(interval);
-                    resolve(userOperationReceipt.result.receipt);
-                  }
-                }, 2000);
-              });
-            };
-            const userOperationReceipt = await pollReceipt(requestId);
-            console.log("userOperationReceipt", userOperationReceipt);
+      <main className="flex-grow flex flex-col justify-center items-center p-4">
+        <Card className="w-full max-w-sm bg-white/80 backdrop-blur-sm shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-center text-xl text-indigo-700">
+              {transactionHash ? "Transaction Confirmed" : "Send Transaction"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TransactionPreview />
+            {!userOp && !transactionHash && (
+              <>
+                {isLoading ? (
+                  <div className="flex justify-center items-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <span className="ml-2">Preparing transaction...</span>
+                  </div>
+                ) : (
+                  <p className="text-gray-600 text-center">
+                    Waiting for transaction details...
+                  </p>
+                )}
+              </>
+            )}
+            {userOp && userOpHash && !transactionHash && (
+              <>
+                <p className="mb-4 text-gray-600 text-center">
+                  Please approve the transaction by signing in with Google
+                </p>
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    nonce={userOpHash}
+                    onSuccess={async ({ credential }) => {
+                      if (!credential) {
+                        throw new Error("No credential");
+                      }
+                      setIsLoading(true);
+                      userOp.signature = toHex(credential);
+                      const ethSendUserOperationRes = await fetch("/bundler", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          id: 1,
+                          jsonrpc: "2.0",
+                          method: "eth_sendUserOperation",
+                          params: [userOp, entryPointAddress],
+                        }),
+                      }).then((res) => res.json());
+                      console.log(
+                        "ethSendUserOperationRes",
+                        ethSendUserOperationRes,
+                      );
+                      const requestId = ethSendUserOperationRes.result;
 
-            const transactionHash = userOperationReceipt.transactionHash;
-            console.log("transactionHash", transactionHash);
+                      const pollReceipt = async (
+                        requestId: string,
+                      ): Promise<any> => {
+                        return new Promise((resolve, reject) => {
+                          const interval = setInterval(async () => {
+                            console.log("pollReceipt... ", requestId);
+                            const userOperationReceipt = await request(
+                              "eth_getUserOperationReceipt",
+                              [requestId],
+                            );
+                            if (userOperationReceipt.error) {
+                              clearInterval(interval);
+                              reject(userOperationReceipt.error.message);
+                            }
+                            if (userOperationReceipt.result) {
+                              clearInterval(interval);
+                              resolve(userOperationReceipt.result.receipt);
+                            }
+                          }, 2000);
+                        });
+                      };
+                      const userOperationReceipt = await pollReceipt(requestId);
+                      console.log("userOperationReceipt", userOperationReceipt);
 
-            if (window.opener && window.opener.parent) {
-              window.opener.parent.postMessage(
-                { type: "transactionHash", transactionHash },
-                "*",
-              );
-            }
-          }}
-        />
-      )}
+                      const transactionHash =
+                        userOperationReceipt.transactionHash;
+                      console.log("transactionHash", transactionHash);
+                      setTransactionHash(transactionHash);
+                      setIsLoading(false);
+                    }}
+                  />
+                </div>
+                {isLoading && (
+                  <div className="mt-4 flex justify-center items-center">
+                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    <span>Processing transaction...</span>
+                  </div>
+                )}
+              </>
+            )}
+            {transactionHash && (
+              <>
+                <p className="mb-4 text-green-600 text-center">
+                  Transaction has been confirmed!
+                </p>
+                <div className="mb-4 flex flex-col">
+                  <span className="font-semibold text-sm">
+                    Transaction Hash:
+                  </span>
+                  <span className="text-sm break-all"> {transactionHash}</span>
+                </div>
+                <Button
+                  onClick={handleClose}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+                >
+                  Close
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 };
