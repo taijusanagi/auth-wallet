@@ -133,7 +133,7 @@ export const AuthWalletApp = () => {
 
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle>JWKS Automated Oracle Information</CardTitle>
+                  <CardTitle>JWKS Oracle Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div>

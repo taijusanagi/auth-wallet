@@ -1,7 +1,7 @@
 "use client";
 
 import { GoogleLogin } from "@react-oauth/google";
-import { Loader2, Wallet } from "lucide-react";
+import { Copy, Loader2, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Hex, encodeFunctionData, formatEther, fromHex, toHex } from "viem";
 
@@ -25,6 +25,7 @@ export const SendTransaction = () => {
   const [userOpHash, setUserOpHash] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [transactionHash, setTransactionHash] = useState("");
+  const [idToken, setIdToken] = useState("");
 
   useEffect(() => {
     if (window.opener && window.opener.parent) {
@@ -166,6 +167,12 @@ export const SendTransaction = () => {
     window.close();
   };
 
+  const handleCopyIdToken = () => {
+    navigator.clipboard.writeText(idToken).then(() => {
+      alert("ID Token copied to clipboard!");
+    });
+  };
+
   const TransactionPreview = () => (
     <div className="mb-4 text-left space-y-2">
       <div className="flex flex-col">
@@ -182,6 +189,12 @@ export const SendTransaction = () => {
         <span className="font-semibold text-sm">Data:</span>
         <span className="text-sm break-all">{data}</span>
       </div>
+      {userOpHash && (
+        <div className="flex flex-col">
+          <span className="font-semibold text-sm">UserOpHash:</span>
+          <span className="text-sm break-all">{userOpHash}</span>
+        </div>
+      )}
     </div>
   );
 
@@ -229,6 +242,7 @@ export const SendTransaction = () => {
                       if (!credential) {
                         throw new Error("No credential");
                       }
+                      setIdToken(credential);
                       setIsLoading(true);
                       userOp.signature = toHex(credential);
                       const ethSendUserOperationRes = await fetch("/bundler", {
@@ -289,9 +303,17 @@ export const SendTransaction = () => {
             )}
             {transactionHash && (
               <>
-                <p className="mb-4 text-green-600 text-center">
-                  Transaction has been confirmed!
-                </p>
+                {idToken && (
+                  <div className="mb-4 flex justify-center">
+                    <Button
+                      onClick={handleCopyIdToken}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center"
+                    >
+                      <Copy className="mr-2" size={16} />
+                      Copy ID Token
+                    </Button>
+                  </div>
+                )}
                 <div className="mb-4 flex flex-col">
                   <span className="font-semibold text-sm">
                     Transaction Hash:
