@@ -2,8 +2,10 @@
 
 import { GoogleLogin } from "@react-oauth/google";
 import jwt from "jsonwebtoken";
-import { useEffect, useState } from "react";
+import { Wallet } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
@@ -33,20 +35,50 @@ export const Connect = () => {
   }, [email]);
 
   return (
-    <GoogleLogin
-      onSuccess={({ credential }) => {
-        if (!credential) {
-          throw new Error("No credential");
-        }
-        const decodedCredential = jwt.decode(credential) as jwt.JwtPayload;
-        if (decodedCredential.aud !== process.env.NEXT_PUBLIC_CLIENT_ID) {
-          throw new Error("Invalid audience");
-        }
-        if (typeof decodedCredential.email != "string") {
-          throw new Error("Invalid email");
-        }
-        setEmail(decodedCredential.email);
-      }}
-    />
+    <div className="w-[400px] h-[600px] bg-gradient-to-br from-blue-100 to-indigo-200 p-4 flex flex-col">
+      <header className="bg-white/90 backdrop-blur-sm shadow-md rounded-2xl">
+        <div className="px-6 py-4 flex justify-center items-center">
+          <Wallet className="text-indigo-600 mr-2" size={24} />
+          <h1 className="text-2xl font-semibold text-indigo-600">AuthWallet</h1>
+        </div>
+      </header>
+
+      <main className="flex-grow flex flex-col justify-center items-center p-4">
+        <Card className="w-full max-w-sm bg-white/80 backdrop-blur-sm shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-center text-xl text-indigo-700">
+              Connect Your Wallet
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="mb-6 text-gray-600">
+              Sign in with Google to connect your wallet
+            </p>
+            <div className="flex justify-center">
+              <GoogleLogin
+                width="100%"
+                onSuccess={({ credential }) => {
+                  if (!credential) {
+                    throw new Error("No credential");
+                  }
+                  const decodedCredential = jwt.decode(
+                    credential,
+                  ) as jwt.JwtPayload;
+                  if (
+                    decodedCredential.aud !== process.env.NEXT_PUBLIC_CLIENT_ID
+                  ) {
+                    throw new Error("Invalid audience");
+                  }
+                  if (typeof decodedCredential.email != "string") {
+                    throw new Error("Invalid email");
+                  }
+                  setEmail(decodedCredential.email);
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
   );
 };

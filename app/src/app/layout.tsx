@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Auth Wallet",
+  title: "AuthWallet",
   description: "This is Auth Wallet",
 };
 
