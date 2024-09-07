@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { zeroAddress } from "viem";
-
 import { GoogleLogin } from "@react-oauth/google";
 import jwt from "jsonwebtoken";
+import { useEffect, useState } from "react";
+import { zeroAddress } from "viem";
 
 export const Connect = () => {
   const [aud, setAud] = useState("");

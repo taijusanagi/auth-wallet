@@ -4,8 +4,6 @@ import { AuthWalletProvider } from "./provider";
 const provider = new AuthWalletProvider();
 
 export const authWalletConnector = () => {
-  let isConnecting = false;
-
   return (config: any) => {
     return {
       id: `${appId}-connector`,
@@ -13,10 +11,6 @@ export const authWalletConnector = () => {
       type: "",
 
       async connect() {
-        if (!isConnecting) {
-          throw new Error("Not connecting");
-        }
-        isConnecting = false;
         await provider.init();
         const accounts = await provider.request({ method: "eth_accounts" });
         return { accounts, chainId };
@@ -30,7 +24,6 @@ export const authWalletConnector = () => {
       },
 
       async getChainId() {
-        isConnecting = true;
         return await provider.request({ method: "eth_chainId" });
       },
 
@@ -39,7 +32,7 @@ export const authWalletConnector = () => {
       },
 
       async isAuthorized() {
-        return true;
+        return false;
       },
 
       async switchChain({ chainId }: { chainId: number }) {
@@ -50,11 +43,17 @@ export const authWalletConnector = () => {
         return chain;
       },
 
-      onAccountsChanged(accounts: string[]) {},
+      onAccountsChanged(accounts: string[]) {
+        console.log("Accounts changed", accounts);
+      },
 
-      onChainChanged(chainId: string) {},
+      onChainChanged(chainId: string) {
+        console.log("Chain changed", chainId);
+      },
 
-      onDisconnect(error?: Error) {},
+      onDisconnect(error?: Error) {
+        console.log("Disconnected", error);
+      },
     };
   };
 };

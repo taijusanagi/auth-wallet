@@ -3,7 +3,7 @@ const url = "http://localhost:3000";
 export const handlePopup = async (
   path: string,
   expectedType: string,
-  messageData?: any
+  messageData?: unknown,
 ) => {
   const width = 400;
   const height = 600;
@@ -13,14 +13,14 @@ export const handlePopup = async (
   const popup = window.open(
     `${url}/${path}`,
     "_blank",
-    `width=${width},height=${height},top=${top},left=${left}`
+    `width=${width},height=${height},top=${top},left=${left}`,
   );
 
   if (!popup) {
     throw new Error("Popup blocked");
   }
 
-  return new Promise<any>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== url) {
         return;

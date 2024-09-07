@@ -1,15 +1,15 @@
 "use client";
 
-import { GoogleOAuthProvider } from "@react-oauth/google";
-
 import {
-  connectorsForWallets,
   RainbowKitProvider,
+  connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 import { baseSepolia } from "viem/chains";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { WagmiProvider, createConfig, http } from "wagmi";
+
 import { authWallet } from "@/lib/auth-wallet";
 
 const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "";
@@ -24,7 +24,7 @@ const connectors = connectorsForWallets(
   {
     appName: "Auth Wallet Sandbox",
     projectId,
-  }
+  },
 );
 
 export const wagmiConfig = createConfig({
