@@ -1,4 +1,3 @@
-import { Main } from "@/components/Main";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Home() {
@@ -7,9 +6,7 @@ export default function Home() {
       <header>
         <ConnectButton />
       </header>
-      <main>
-        <Main />
-      </main>
+      <main>Main</main>
       <footer>Footer</footer>
     </div>
   );
