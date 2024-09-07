@@ -1,9 +1,10 @@
 "use client";
 
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import { Key, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { parseEther } from "viem";
-import { useAccount, useBalance, useWalletClient } from "wagmi";
+import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedC
 
 export const AuthWalletApp = () => {
   const { openConnectModal } = useConnectModal();
+  const { disconnect } = useDisconnect();
   const { isConnected, address } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { data: balance } = useBalance({ address });
@@ -67,11 +69,90 @@ export const AuthWalletApp = () => {
     }
   };
 
+  const LandingPage = () => (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+      <section className="text-center">
+        <Wallet className="inline-block text-indigo-600 mb-4" size={64} />
+        <h1 className="text-4xl font-bold text-indigo-600 mb-4">AuthWallet</h1>
+        <p className="text-xl text-gray-600">
+          Secure, Simple, and Smart Wallet Management
+        </p>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-indigo-600">
+          Problem & Motivation
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Card className="bg-white/80 backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <Wallet className="text-indigo-600 mb-2" size={24} />
+              <h3 className="font-semibold mb-2">Complex Wallet Management</h3>
+              <p className="text-sm text-gray-600">
+                Traditional wallet management is often complex and intimidating
+                for new users.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/80 backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <Shield className="text-indigo-600 mb-2" size={24} />
+              <h3 className="font-semibold mb-2">Advanced but Complicated</h3>
+              <p className="text-sm text-gray-600">
+                New technologies like MPC reduce risks but introduce complex
+                concepts.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/80 backdrop-blur-sm">
+            <CardContent className="pt-6">
+              <Key className="text-indigo-600 mb-2" size={24} />
+              <h3 className="font-semibold mb-2">Simplicity Needed</h3>
+              <p className="text-sm text-gray-600">
+                There's a need for a simple yet secure enough wallet solution.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-indigo-600">Our Solution</h2>
+        <Card className="bg-white/80 backdrop-blur-sm">
+          <CardContent className="pt-6 space-y-4">
+            <p>• OAuth2.0 based Account Abstraction wallet</p>
+            <p>• JWT verification with RSA in smart contracts</p>
+            <p>
+              • Smart contracts function similarly to web2 server authentication
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <Card className="bg-white/80 backdrop-blur-sm text-center">
+        <CardContent className="pt-6">
+          <p className="mb-4">Connect your wallet to get started</p>
+          <Button
+            onClick={handleConnect}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            Connect Wallet
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-indigo-600">AuthWallet</div>
+          <div
+            className="text-2xl font-bold text-indigo-600 cursor-pointer"
+            onClick={() => disconnect()}
+          >
+            AuthWallet
+          </div>
           <ConnectButton
             showBalance={false}
             chainStatus={"none"}
@@ -145,17 +226,7 @@ export const AuthWalletApp = () => {
             </Card>
           </>
         ) : (
-          <Card className="bg-white/80 backdrop-blur-sm text-center">
-            <CardContent className="pt-6">
-              <p className="mb-4">Connect your wallet to get started</p>
-              <Button
-                onClick={handleConnect}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                Connect Wallet
-              </Button>
-            </CardContent>
-          </Card>
+          <LandingPage />
         )}
       </main>
     </div>
