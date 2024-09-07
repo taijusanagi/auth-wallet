@@ -12,6 +12,7 @@ import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/autom
 contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
     using FunctionsRequest for FunctionsRequest.Request;
 
+    event ModulusReceived(string indexed kid, bytes modulus);
     error UnexpectedRequestID(bytes32 requestId);
 
     // Chainlink Functions Data
@@ -24,7 +25,7 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         "throw Error('Request failed');"
         "}"
         "const { data } = apiResponse;"
-        "return Functions.encodeString(data.keys[0].kid);";
+        "return Functions.encodeString(data.keys[0].kid + data.keys[1].kid);";
 
     string public modulusSource =
         "const { Buffer } = await import('node:buffer');"
@@ -43,14 +44,12 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
     uint64 public subscriptionId;
     uint32 public gasLimit;
 
-    bytes32 public s_lastRequestId;
-
     // Chainlink Automation Data
     uint256 public interval = 1 hours;
     uint256 public lastTimeStamp;
 
     // App Data
-    string public processingKid;
+    mapping(bytes32 => string) public requestIdToKid;
     mapping(string => bytes) public kidToModulus;
 
     constructor(
@@ -70,42 +69,42 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         bytes memory _response,
         bytes memory
     ) internal override {
-        if (s_lastRequestId != _requestId) {
-            revert UnexpectedRequestID(_requestId);
-        }
-        if (bytes(processingKid).length == 0) {
-            _setProcessingKid(string(_response));
-            _requestModulus();
+        if (bytes(requestIdToKid[_requestId]).length == 0) {
+            (string memory kid1Str, string memory kid2Str) = extractKid(
+                _response
+            );
+            if (bytes(kidToModulus[kid1Str]).length == 0) {
+                _requestModulus(kid1Str);
+            }
+            if (bytes(kidToModulus[kid2Str]).length == 0) {
+                _requestModulus(kid2Str);
+            }
         } else {
-            _setModulus(_response);
+            string memory kid = requestIdToKid[_requestId];
+            kidToModulus[kid] = _response;
+            emit ModulusReceived(kid, _response);
         }
     }
 
-    function _requestKid() internal returns (bytes32) {
+    function _requestKid() internal {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(kidSource);
-        s_lastRequestId = _sendRequest(
-            req.encodeCBOR(),
-            subscriptionId,
-            gasLimit,
-            donID
-        );
-        return s_lastRequestId;
+        _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
     }
 
-    function _requestModulus() internal returns (bytes32) {
+    function _requestModulus(string memory kid) internal {
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(modulusSource);
         string[] memory args = new string[](1);
-        args[0] = processingKid;
+        args[0] = kid;
         req.setArgs(args);
-        s_lastRequestId = _sendRequest(
+        bytes32 requestId = _sendRequest(
             req.encodeCBOR(),
             subscriptionId,
             gasLimit,
             donID
         );
-        return s_lastRequestId;
+        requestIdToKid[requestId] = kid;
     }
 
     // Chainlink Automation Methods
@@ -122,15 +121,19 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         }
     }
 
-    // App Methods
-    function _setProcessingKid(string memory _kid) internal {
-        require(bytes(processingKid).length == 0, "Kid already set");
-        processingKid = _kid;
-    }
+    function extractKid(
+        bytes memory _response
+    ) public pure returns (string memory, string memory) {
+        require(_response.length == 80, "Input must be 80 bytes long");
 
-    function _setModulus(bytes memory _modulus) internal {
-        require(bytes(processingKid).length > 0, "No processing kid set");
-        kidToModulus[processingKid] = _modulus;
-        delete processingKid;
+        bytes memory kid1 = new bytes(40);
+        bytes memory kid2 = new bytes(40);
+
+        for (uint i = 0; i < 40; i++) {
+            kid1[i] = _response[i];
+            kid2[i] = _response[i + 40];
+        }
+
+        return (string(kid1), string(kid2));
     }
 }

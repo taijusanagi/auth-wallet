@@ -1,3 +1,3 @@
 export const baseSepoliaDeployedContractAddress = {
-  JWKSAutomatedOracle: "0x4418b48912D3341B325db3d8Ce69Dd0BFe4350CD",
+  JWKSAutomatedOracle: "0x5ef92367432B5Ca5506C9705609A03d1Df576425",
 };
