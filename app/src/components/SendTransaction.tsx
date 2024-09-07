@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { encodeFunctionData, toHex } from "viem";
 
 import { baseSepoliaPublicClient } from "@/lib/clients";
+import { sampleJWT } from "@/lib/jwt";
 import { request } from "@/lib/rpc";
 
 import { AuthWalletAbi } from "../../../contracts/abis/AuthWallet";
@@ -84,10 +85,7 @@ export const SendTransaction = () => {
             maxFeePerGas: "0x0",
             maxPriorityFeePerGas: "0x0",
             paymasterAndData: "0x",
-            signature: "0x",
-            // preVerificationGas: toHex(BigInt(500000)),
-            // verificationGasLimit: toHex(BigInt(1000000)),
-            // callGasLimit: toHex(BigInt(500000)),
+            signature: toHex(sampleJWT),
           } as any;
 
           console.log("userOp", userOp);
@@ -148,19 +146,7 @@ export const SendTransaction = () => {
           });
           console.log("userOpHash", userOpHash);
           setUserOp(userOp);
-          // setUserOpHash(userOpHash);
-          // const sendUserOperationRes = await request("eth_sendUserOperation", [
-          //   userOp,
-          //   entryPointAddress,
-          // ]);
-
-          // console.log("sendUserOperationRes", sendUserOperationRes);
-
-          await fetch("/bundler", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userOp),
-          });
+          setUserOpHash(userOpHash);
         }
       };
       window.addEventListener("message", handleTransactionMessage);
@@ -184,6 +170,50 @@ export const SendTransaction = () => {
               throw new Error("No credential");
             }
             userOp.signature = toHex(credential);
+            const ethSendUserOperationRes = await fetch("/bundler", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: 1,
+                jsonrpc: "2.0",
+                method: "eth_sendUserOperation",
+                params: [userOp, entryPointAddress],
+              }),
+            }).then((res) => res.json());
+            console.log("ethSendUserOperationRes", ethSendUserOperationRes);
+            const requestId = ethSendUserOperationRes.result;
+
+            const pollReceipt = async (requestId: string): Promise<any> => {
+              return new Promise((resolve, reject) => {
+                const interval = setInterval(async () => {
+                  console.log("pollReceipt... ", requestId);
+                  const userOperationReceipt = await request(
+                    "eth_getUserOperationReceipt",
+                    [requestId],
+                  );
+                  if (userOperationReceipt.error) {
+                    clearInterval(interval);
+                    reject(userOperationReceipt.error.message);
+                  }
+                  if (userOperationReceipt.result) {
+                    clearInterval(interval);
+                    resolve(userOperationReceipt.result.receipt);
+                  }
+                }, 2000);
+              });
+            };
+            const userOperationReceipt = await pollReceipt(requestId);
+            console.log("userOperationReceipt", userOperationReceipt);
+
+            const transactionHash = userOperationReceipt.transactionHash;
+            console.log("transactionHash", transactionHash);
+
+            if (window.opener && window.opener.parent) {
+              window.opener.parent.postMessage(
+                { type: "transactionHash", transactionHash },
+                "*",
+              );
+            }
           }}
         />
       )}

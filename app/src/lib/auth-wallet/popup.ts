@@ -1,4 +1,7 @@
-const url = "http://localhost:3000";
+const url =
+  process.env.NODE_ENV == "production"
+    ? "https://auth-wallet.vercel.app/"
+    : "http://localhost:3000";
 
 export const handlePopup = async (
   requestType: string,
