@@ -4,7 +4,7 @@ import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { parseEther } from "viem";
+import { fromHex, parseEther } from "viem";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
+import { JWKSAutomatedOracle } from "../../../contracts/abis/JWKSAutomatedOracle";
 import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
 
 export const AuthWalletApp = () => {
@@ -27,7 +28,6 @@ export const AuthWalletApp = () => {
   const [sendAmount, setSendAmount] = useState("");
   const [myEmail, setMyEmail] = useState("");
 
-  const [jwksData, setJwksData] = useState<any>();
   const [oracleStatus, setOracleStatus] = useState("Loading...");
 
   useEffect(() => {
@@ -40,9 +40,23 @@ export const AuthWalletApp = () => {
 
     fetch("https://www.googleapis.com/oauth2/v3/certs")
       .then((response) => response.json())
-      .then((data) => {
-        setJwksData(data);
-        setOracleStatus("Good");
+      .then(async (data) => {
+        let oracleStatus = "Good";
+        for (const key of data.keys) {
+          const modulus = await baseSepoliaPublicClient.readContract({
+            abi: JWKSAutomatedOracle,
+            address: baseSepoliaDeployedContractAddress.JWKSAutomatedOracle,
+            functionName: "kidToModulus",
+            args: [key.kid],
+          });
+          if (
+            modulus.substring(2) !==
+            Buffer.from(key.n, "base64").toString("hex")
+          ) {
+            oracleStatus = "Bad";
+          }
+        }
+        setOracleStatus(oracleStatus);
       })
       .catch((error) => {
         console.error("Error fetching JWKS data:", error);
