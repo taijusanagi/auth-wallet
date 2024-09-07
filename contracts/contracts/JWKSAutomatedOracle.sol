@@ -18,6 +18,7 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
     // Chainlink Functions Data
     string public kidSource =
         "const { Buffer } = await import('node:buffer');"
+        "const index = args[0];"
         "const apiResponse = await Functions.makeHttpRequest({"
         "url: 'https://www.googleapis.com/oauth2/v3/certs'"
         "});"
@@ -25,7 +26,7 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         "throw Error('Request failed');"
         "}"
         "const { data } = apiResponse;"
-        "return Functions.encodeString(data.keys[0].kid + data.keys[1].kid);";
+        "return Functions.encodeString(data.keys[index].kid);";
 
     string public modulusSource =
         "const { Buffer } = await import('node:buffer');"
@@ -70,14 +71,9 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         bytes memory
     ) internal override {
         if (bytes(requestIdToKid[_requestId]).length == 0) {
-            (string memory kid1Str, string memory kid2Str) = extractKid(
-                _response
-            );
-            if (bytes(kidToModulus[kid1Str]).length == 0) {
-                _requestModulus(kid1Str);
-            }
-            if (bytes(kidToModulus[kid2Str]).length == 0) {
-                _requestModulus(kid2Str);
+            string memory kidStr = string(_response);
+            if (bytes(kidToModulus[kidStr]).length == 0) {
+                _requestModulus(kidStr);
             }
         } else {
             string memory kid = requestIdToKid[_requestId];
@@ -86,8 +82,11 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
         }
     }
 
-    function _requestKid() internal {
+    function _requestKid(string memory index) internal {
         FunctionsRequest.Request memory req;
+        string[] memory args = new string[](1);
+        args[0] = index;
+        req.setArgs(args);
         req.initializeRequestForInlineJavaScript(kidSource);
         _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
     }
@@ -117,23 +116,8 @@ contract JWKSAutomatedOracle is FunctionsClient, AutomationCompatibleInterface {
     function performUpkeep(bytes calldata) external override {
         if ((block.timestamp - lastTimeStamp) > interval) {
             lastTimeStamp = block.timestamp;
-            _requestKid();
+            _requestKid("0");
+            _requestKid("1");
         }
-    }
-
-    function extractKid(
-        bytes memory _response
-    ) public pure returns (string memory, string memory) {
-        require(_response.length == 80, "Input must be 80 bytes long");
-
-        bytes memory kid1 = new bytes(40);
-        bytes memory kid2 = new bytes(40);
-
-        for (uint i = 0; i < 40; i++) {
-            kid1[i] = _response[i];
-            kid2[i] = _response[i + 40];
-        }
-
-        return (string(kid1), string(kid2));
     }
 }
