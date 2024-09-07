@@ -27,6 +27,9 @@ export const AuthWalletApp = () => {
   const [sendAmount, setSendAmount] = useState("");
   const [myEmail, setMyEmail] = useState("");
 
+  const [jwksData, setJwksData] = useState<any>();
+  const [oracleStatus, setOracleStatus] = useState("Loading...");
+
   useEffect(() => {
     if (isConnected) {
       const storedEmail = localStorage.getItem("email");
@@ -34,6 +37,17 @@ export const AuthWalletApp = () => {
         setMyEmail(storedEmail);
       }
     }
+
+    fetch("https://www.googleapis.com/oauth2/v3/certs")
+      .then((response) => response.json())
+      .then((data) => {
+        setJwksData(data);
+        setOracleStatus("Good");
+      })
+      .catch((error) => {
+        console.error("Error fetching JWKS data:", error);
+        setOracleStatus("Bad");
+      });
   }, [isConnected]);
 
   const handleSendETH = async () => {
@@ -70,6 +84,9 @@ export const AuthWalletApp = () => {
     }
   };
 
+  const contractUrl = `https://sepolia.basescan.org/address/${baseSepoliaDeployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
+  const certUrl = "https://www.googleapis.com/oauth2/v3/certs";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <header className="bg-white shadow-sm">
@@ -91,27 +108,71 @@ export const AuthWalletApp = () => {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
         {isConnected ? (
           <>
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>Wallet Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div>
-                  <Label>Address:</Label>
-                  <div className="text-xs lg:text-base">{address}</div>
-                </div>
-                <div>
-                  <Label>Balance:</Label>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>Wallet Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
                   <div>
-                    {balance?.formatted} {balance?.symbol}
+                    <Label>Address:</Label>
+                    <div className="text-xs lg:text-base">{address}</div>
                   </div>
-                </div>
-                <div>
-                  <Label>Your Email:</Label>
-                  <div>{myEmail}</div>
-                </div>
-              </CardContent>
-            </Card>
+                  <div>
+                    <Label>Balance:</Label>
+                    <div>
+                      {balance?.formatted} {balance?.symbol}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Your Email:</Label>
+                    <div>{myEmail}</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle>JWKS Automated Oracle Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div>
+                    <Label>Contract URL:</Label>
+                    <div className="text-xs lg:text-sm break-all">
+                      <a
+                        href={contractUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {contractUrl}
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>JWKS URL:</Label>
+                    <div className="text-xs lg:text-sm break-all">
+                      <a
+                        href={certUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {certUrl}
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Oracle Status:</Label>
+                    <div
+                      className={`text-xs lg:text-sm font-semibold ${oracleStatus === "Good" ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {oracleStatus}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             <Card className="bg-white/80 backdrop-blur-sm">
               <CardHeader>
