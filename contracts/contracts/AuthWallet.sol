@@ -19,10 +19,9 @@ contract AuthWallet is JWT, RSAPKCS1Verifier {
     event ModulusSet(string indexed kid, bytes modulus);
 
     // Function to set modulus for a specific kid
-    function setModulus(string memory _kid, string memory _modulus) public {
-        bytes memory decodedModulus = _modulus.decode();
-        kidToModulus[_kid] = decodedModulus;
-        emit ModulusSet(_kid, decodedModulus);
+    function setModulus(string memory _kid, bytes memory _modulus) public {
+        kidToModulus[_kid] = _modulus;
+        emit ModulusSet(_kid, _modulus);
     }
 
     // Function to validate JWT
