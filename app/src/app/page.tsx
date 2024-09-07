@@ -1,13 +1,5 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ExampleApp } from "@/components/ExampleApp";
 
 export default function HomePage() {
-  return (
-    <div>
-      <header>
-        <ConnectButton />
-      </header>
-      <main>Main</main>
-      <footer>Footer</footer>
-    </div>
-  );
+  return <ExampleApp />;
 }

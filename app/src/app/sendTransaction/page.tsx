@@ -1,7 +1,5 @@
+import { SendTransaction } from "@/components/SendTransaction";
+
 export default function SendTransactionPage() {
-  return (
-    <div>
-      <main>SendTransaction</main>
-    </div>
-  );
+  return <SendTransaction />;
 }
