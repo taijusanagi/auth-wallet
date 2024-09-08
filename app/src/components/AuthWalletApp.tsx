@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Hex, parseEther } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,6 @@ export const AuthWalletApp = () => {
 
   const [oracleStatus, setOracleStatus] = useState("Loading...");
 
-  const [message, setMessage] = useState("");
   const [attestation, setAttestation] = useState("");
 
   useEffect(() => {
@@ -261,44 +259,8 @@ export const AuthWalletApp = () => {
             </Card>
             <Card className="bg-white/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle>Benefit 2: Send XMTP Message by Email</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="sendToEmail">Recipient Email:</Label>
-                  <Input
-                    id="sendToEmail"
-                    type="email"
-                    placeholder="Enter recipient's email address"
-                    value={sendToEmail}
-                    onChange={(e) => setSendToEmail(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="message">Message:</Label>
-                  <Input
-                    id="message"
-                    type="text"
-                    placeholder="Message to send"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="mt-1"
-                  />
-                </div>
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!message}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700"
-                >
-                  Send Message
-                </Button>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
                 <CardTitle>
-                  Benefit 3: Send Sign Protocol Attestation by Email
+                  Benefit 2: Send Sign Protocol Attestation by Email
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
