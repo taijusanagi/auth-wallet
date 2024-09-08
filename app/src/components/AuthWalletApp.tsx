@@ -412,7 +412,7 @@ export const AuthWalletApp = () => {
                     icon: Lightbulb,
                     title: "The Need for Simplicity",
                     description:
-                      "A secure and user-friendly wallet solution is desperately needed. This is where AuthWallet steps in to bridge the gap.",
+                      "A secure and user-friendly wallet solution is desperately needed. This is where AuthWallet 2.5 steps in to bridge the gap.",
                   },
                 ].map((item, index) => (
                   <motion.div
