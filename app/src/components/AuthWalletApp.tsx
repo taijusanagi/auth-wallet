@@ -345,12 +345,28 @@ export const AuthWalletApp = () => {
                 <CardTitle>Benefit 3: OmniExecution</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <p className="text-sm text-gray-600">
+                  Please make sure your account is already created in Optimism
+                  Sepolia.
+                </p>
                 <Button
                   onClick={handleOmniExecute}
                   className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   Test Omni Execution
                 </Button>
+                {omniExecuteTxHash && (
+                  <div className="mt-4">
+                    <a
+                      href={`https://testnet.layerzeroscan.com/tx/${omniExecuteTxHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline break-all"
+                    >
+                      {`https://testnet.layerzeroscan.com/tx/${omniExecuteTxHash}`}
+                    </a>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </>
