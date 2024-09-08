@@ -28,6 +28,10 @@ The ID Token generated during sign-in contains a JWT. A dedicated smart contract
 
 The AuthWallet 2.5 is fully compatible with EIP-1193: Ethereum Provider JavaScript API. It also supports modern Ethereum libraries like viem and wagmi, making it easy to integrate with decentralized applications (dApps). In this demo, we utilize RainbowKit to simplify the connection of AuthWallet 2.5 to the Ethereum network.
 
+### Benefit
+
+With AuthWallet 2.5, users do not need to have an existing wallet address to get started. This eliminates the barrier of requiring a wallet setup before onboarding, making it easier for new users to engage with the Ethereum ecosystem.
+
 ## Deployed Contracts
 
 ### OmniExecutor

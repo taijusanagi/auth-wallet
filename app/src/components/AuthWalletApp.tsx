@@ -490,6 +490,20 @@ export const AuthWalletApp = () => {
           </div>
         )}
       </main>
+      <footer className="bg-white shadow-sm mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-gray-600">
+          <p className="mt-2">
+            <a
+              href="https://github.com/taijusanagi/auth-wallet"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 hover:underline"
+            >
+              View on GitHub
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
