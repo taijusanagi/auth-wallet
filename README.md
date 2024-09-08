@@ -2,7 +2,7 @@
 
 ![top](./app/public/top.png)
 
-Simplifying Wallet Management with OAuth2.0, OpenID Connect, and Account Abstraction
+Simplifying Wallet Management with OAuth2.0, OpenID Connect, JWT, and RSA Verification and Account Abstraction
 
 ## Description
 
