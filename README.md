@@ -10,6 +10,10 @@ AuthWallet 2.5 revolutionizes the way users interact with Ethereum wallets by in
 
 ## How It Works
 
+![key-concept](./app/public/key-concept.png)
+
+Usually, KMS servers act as intermediaries for social sign-ins, but AuthWallet 2.5 directly verifies the ID Token from the Identity Provider (IdP) within the smart contract, removing the need for an intermediary.
+
 ![how-it-works](./app/public/how-it-works.png)
 
 ### Google JWKS Data Retrieval:
