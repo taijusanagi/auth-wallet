@@ -1,6 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+import "@nomicfoundation/hardhat-verify";
+
 import { defaultSignerPrivateKey } from "./key";
 
 const accounts = [process.env.PRIVATE_KEY || defaultSignerPrivateKey];
@@ -21,6 +23,10 @@ const config: HardhatUserConfig = {
       url: "https://sepolia.base.org",
       accounts,
     },
+  },
+  etherscan: {
+    apiKey:
+      process.env.ETHERSCAN_API_KEY || "BS56RJPCFREESF68WMCV487FT3VII2QZQT",
   },
 };
 
