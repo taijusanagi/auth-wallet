@@ -1,11 +1,12 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+
 import { defaultSignerPrivateKey } from "./key";
 
 const accounts = [process.env.PRIVATE_KEY || defaultSignerPrivateKey];
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.24",
+  solidity: "0.8.23",
   networks: {
     hardhat: {
       forking: {

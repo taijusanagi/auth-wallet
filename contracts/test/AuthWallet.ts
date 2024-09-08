@@ -10,6 +10,7 @@ import {
   nonce as expectedNonce,
 } from "./data/jwt";
 import { entryPointAddress } from "../externalContractAddress";
+import { ZeroAddress } from "ethers";
 
 describe("AuthWallet", function () {
   let authWallet: AuthWallet;
@@ -27,6 +28,7 @@ describe("AuthWallet", function () {
     authWallet = await AuthWalletFactory.deploy(
       entryPointAddress,
       jwksAutomatedOracleMockAddress,
+      ZeroAddress,
       aud,
       email
     );

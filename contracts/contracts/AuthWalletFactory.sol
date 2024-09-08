@@ -11,11 +11,13 @@ contract AuthWalletFactory {
 
     constructor(
         IEntryPoint _entryPoint,
-        JWKSAutomatedOracle _jwksAutomatedOracle
+        JWKSAutomatedOracle _jwksAutomatedOracle,
+        OmniExecutor _omniExecutor
     ) {
         accountImplementation = new AuthWallet(
             _entryPoint,
             _jwksAutomatedOracle,
+            _omniExecutor,
             "aud",
             "email"
         );

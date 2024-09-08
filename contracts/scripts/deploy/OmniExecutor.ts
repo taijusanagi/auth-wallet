@@ -1,21 +1,17 @@
 import { ethers } from "hardhat";
-
-import { baseSepoliaChainlinkConfig } from "../../chainlinkConfig";
-import { nullBytes32 } from "../../util";
+import { endpointAddress } from "../../layerZeroConfig";
 import { createXAddress } from "../../externalContractAddress";
+import { nullBytes32 } from "../../util";
 
 export const main = async () => {
   const salt = nullBytes32;
   const createX = await ethers.getContractAt("CreateX", createXAddress);
-
-  const JWKSAutomatedOracle = await ethers.getContractFactory(
-    "JWKSAutomatedOracle"
-  );
-  const { data } = await JWKSAutomatedOracle.getDeployTransaction(
-    baseSepoliaChainlinkConfig.router,
-    baseSepoliaChainlinkConfig.donId,
-    baseSepoliaChainlinkConfig.subscriptionId,
-    baseSepoliaChainlinkConfig.gasLimit
+  const OmniExecutor = await ethers.getContractFactory("OmniExecutor");
+  const [signer] = await ethers.getSigners();
+  const signerAddress = await signer.getAddress();
+  const { data } = await OmniExecutor.getDeployTransaction(
+    endpointAddress,
+    signerAddress
   );
   const saltHash = ethers.keccak256(salt);
   const initCodeHash = ethers.keccak256(data);

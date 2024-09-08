@@ -15,7 +15,7 @@ import { truncate } from "@/lib/utils";
 import { AuthWalletAbi } from "../../../contracts/abis/AuthWallet";
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
 import { EntryPointAbi } from "../../../contracts/abis/EntryPoint";
-import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
+import { deployedContractAddress } from "../../../contracts/deployedContractAddress";
 import { entryPointAddress } from "../../../contracts/externalContractAddress";
 
 export const SendTransaction = () => {
@@ -64,7 +64,7 @@ export const SendTransaction = () => {
               args: [aud, email, BigInt(0)],
             });
             const factoryAddressBytes =
-              baseSepoliaDeployedContractAddress.AuthWalletFactory.toLowerCase().replace(
+              deployedContractAddress.AuthWalletFactory.toLowerCase().replace(
                 "0x",
                 "",
               );

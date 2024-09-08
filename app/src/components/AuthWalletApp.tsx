@@ -16,7 +16,7 @@ import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
 import { JWKSAutomatedOracle } from "../../../contracts/abis/JWKSAutomatedOracle";
-import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
+import { deployedContractAddress } from "../../../contracts/deployedContractAddress";
 
 export const AuthWalletApp = () => {
   const { openConnectModal } = useConnectModal();
@@ -50,7 +50,7 @@ export const AuthWalletApp = () => {
         for (const key of data.keys) {
           const modulus = await baseSepoliaPublicClient.readContract({
             abi: JWKSAutomatedOracle,
-            address: baseSepoliaDeployedContractAddress.JWKSAutomatedOracle,
+            address: deployedContractAddress.JWKSAutomatedOracle,
             functionName: "kidToModulus",
             args: [key.kid],
           });
@@ -83,7 +83,7 @@ export const AuthWalletApp = () => {
     const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
     const to = await baseSepoliaPublicClient.readContract({
       abi: AuthWalletFactoryAbi,
-      address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
+      address: deployedContractAddress.AuthWalletFactory,
       functionName: "getDeployedAddress",
       args: [aud, sendToEmail, BigInt(0)],
     });
@@ -103,7 +103,7 @@ export const AuthWalletApp = () => {
     }
   };
 
-  const contractUrl = `https://sepolia.basescan.org/address/${baseSepoliaDeployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
+  const contractUrl = `https://sepolia.basescan.org/address/${deployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
   const certUrl = "https://www.googleapis.com/oauth2/v3/certs";
 
   const handleSendMessage = async () => {};
@@ -114,7 +114,7 @@ export const AuthWalletApp = () => {
     const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
     const to = await baseSepoliaPublicClient.readContract({
       abi: AuthWalletFactoryAbi,
-      address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
+      address: deployedContractAddress.AuthWalletFactory,
       functionName: "getDeployedAddress",
       args: [aud, sendToEmail, BigInt(0)],
     });

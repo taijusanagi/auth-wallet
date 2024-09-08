@@ -7,22 +7,26 @@ import "./JWT.sol";
 import "./RSAPKCS1Verifier.sol";
 import "./JWKSAutomatedOracle.sol";
 
+import "./OmniExecutor.sol";
+
 contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
     using Base64 for string;
     using String for string;
 
     IEntryPoint private immutable _entryPoint;
     JWKSAutomatedOracle public immutable jwksAutomatedOracle;
+    OmniExecutor public immutable omniExecutor;
 
     string public aud;
     string public email;
 
     bytes public constant EXPONENT = hex"010001"; // 65537 in hexadecimal
 
-    modifier onlyEntryPoint() {
+    modifier onlyEntryPointOrOmniExecutor() {
         require(
-            msg.sender == address(entryPoint()),
-            "EthDriveAccount: not EntryPoint"
+            msg.sender == address(entryPoint()) ||
+                msg.sender == address(omniExecutor),
+            "EthDriveAccount: not EntryPoint or OmniExecutor"
         );
         _;
     }
@@ -30,11 +34,13 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
     constructor(
         IEntryPoint entryPoint_,
         JWKSAutomatedOracle _jwksAutomatedOracle,
+        OmniExecutor _omniExecutor,
         string memory _aud,
         string memory _email
     ) {
         _entryPoint = entryPoint_;
         jwksAutomatedOracle = _jwksAutomatedOracle;
+        omniExecutor = _omniExecutor;
         initialize(_aud, _email);
     }
 
@@ -56,7 +62,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
         address to,
         uint256 value,
         bytes calldata data
-    ) public onlyEntryPoint {
+    ) public onlyEntryPointOrOmniExecutor {
         _call(to, value, data);
     }
 
@@ -64,7 +70,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
         address[] calldata to,
         uint256[] calldata value,
         bytes[] calldata data
-    ) public onlyEntryPoint {
+    ) public onlyEntryPointOrOmniExecutor {
         require(
             to.length == data.length && value.length == data.length,
             "wrong array lengths"

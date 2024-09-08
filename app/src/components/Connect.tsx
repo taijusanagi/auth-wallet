@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
-import { baseSepoliaDeployedContractAddress } from "../../../contracts/deployedContractAddress";
+import { deployedContractAddress } from "../../../contracts/deployedContractAddress";
 
 export const Connect = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export const Connect = () => {
       const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
       const address = await baseSepoliaPublicClient.readContract({
         abi: AuthWalletFactoryAbi,
-        address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
+        address: deployedContractAddress.AuthWalletFactory,
         functionName: "getDeployedAddress",
         args: [aud, email, BigInt(0)],
       });

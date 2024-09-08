@@ -1,11 +1,11 @@
 import { ethers } from "hardhat";
 
-import { baseSepoliaDeployedContractAddress } from "../deployedContractAddress";
+import { deployedContractAddress } from "../deployedContractAddress";
 
 export const main = async () => {
   const jwksAutomatedOracle = await ethers.getContractAt(
     "JWKSAutomatedOracle",
-    baseSepoliaDeployedContractAddress.JWKSAutomatedOracle
+    deployedContractAddress.JWKSAutomatedOracle
   );
   const tx = await jwksAutomatedOracle.performUpkeep("0x");
   await tx.wait();
