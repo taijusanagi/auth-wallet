@@ -1,5 +1,5 @@
 export const deployedContractAddress = {
-  OmniExecutor: "0xD00a0dEebab070Ab32cb0A7144C94Eb428ee065a",
+  OmniExecutor: "0x51fd5FeFfa632bEACCeB12e035C4d29287714936",
   JWKSAutomatedOracle: "0x0C764b9df1646958Ff5786fb08C7b59779e8ff6F",
-  AuthWalletFactory: "0x02CFf3e26A3556121E1F078c5202a7E55d24d6e0",
+  AuthWalletFactory: "0xA3c2953Ff25e422029AE94E13806DcF0717f3963",
 };

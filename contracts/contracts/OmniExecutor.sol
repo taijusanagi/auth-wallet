@@ -6,7 +6,9 @@ import {OApp, Origin, MessagingFee} from "@layerzerolabs/oapp-evm/contracts/oapp
 import "./AuthWallet.sol";
 
 contract OmniExecutor is OApp {
-    constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) {}
+    constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) {
+        _transferOwnership(_owner);
+    }
 
     function send(
         uint32 _dstEid,
