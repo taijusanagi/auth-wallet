@@ -13,6 +13,10 @@ const config: HardhatUserConfig = {
         url: "https://sepolia.base.org",
       },
     },
+    "optimism-sepolia": {
+      url: "https://sepolia.optimism.io",
+      accounts,
+    },
     "base-sepolia": {
       url: "https://sepolia.base.org",
       accounts,
