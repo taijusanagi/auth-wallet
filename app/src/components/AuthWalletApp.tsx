@@ -1,11 +1,12 @@
 "use client";
 
 import { EvmChains, SignProtocolClient, SpMode } from "@ethsign/sp-sdk";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Hex, parseEther } from "viem";
+import { Hex, encodeFunctionData, parseEther, zeroAddress } from "viem";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,9 @@ import { baseSepoliaPublicClient } from "@/lib/clients";
 
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
 import { JWKSAutomatedOracle } from "../../../contracts/abis/JWKSAutomatedOracle";
+import { OmniExecutorAbi } from "../../../contracts/abis/OmniExecutor";
 import { deployedContractAddress } from "../../../contracts/deployedContractAddress";
+import { optimismSepoliaEid } from "../../../contracts/layerZeroConfig";
 
 export const AuthWalletApp = () => {
   const { openConnectModal } = useConnectModal();
@@ -33,6 +36,7 @@ export const AuthWalletApp = () => {
   const [oracleStatus, setOracleStatus] = useState("Loading...");
 
   const [attestation, setAttestation] = useState("");
+  const [omniExecuteTxHash, setOmniExecuteTxHash] = useState("");
 
   useEffect(() => {
     if (isConnected) {
@@ -106,8 +110,6 @@ export const AuthWalletApp = () => {
   const contractUrl = `https://sepolia.basescan.org/address/${deployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
   const certUrl = "https://www.googleapis.com/oauth2/v3/certs";
 
-  const handleSendMessage = async () => {};
-
   const schemaIdWithType = "onchain_evm_84532_0x27e";
 
   const handleSendAttestation = async () => {
@@ -129,6 +131,37 @@ export const AuthWalletApp = () => {
       data: { message: attestation },
       indexingValue: "0x",
     });
+  };
+
+  const handleOmniExecute = async () => {
+    if (!walletClient) {
+      throw new Error("No wallet client");
+    }
+    const GAS_LIMIT = 3000000;
+    const MSG_VALUE = 0;
+    const options = Options.newOptions().addExecutorLzReceiveOption(
+      GAS_LIMIT,
+      MSG_VALUE,
+    );
+
+    const data = encodeFunctionData({
+      abi: OmniExecutorAbi,
+      functionName: "send",
+      args: [
+        optimismSepoliaEid,
+        zeroAddress,
+        BigInt(0),
+        "0x",
+        options.toHex() as Hex,
+      ],
+    });
+    const hash = await walletClient.sendTransaction({
+      to: deployedContractAddress.OmniExecutor,
+      value: parseEther("0.0001"),
+      data: data,
+    });
+    console.log("hash", hash);
+    setOmniExecuteTxHash(hash);
   };
 
   return (
@@ -304,6 +337,19 @@ export const AuthWalletApp = () => {
                   className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   Send Attestation
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Benefit 3: OmniExecution</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button
+                  onClick={handleOmniExecute}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Test Omni Execution
                 </Button>
               </CardContent>
             </Card>

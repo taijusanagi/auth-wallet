@@ -13,6 +13,8 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
     using Base64 for string;
     using String for string;
 
+    event Called();
+
     IEntryPoint private immutable _entryPoint;
     JWKSAutomatedOracle public immutable jwksAutomatedOracle;
     OmniExecutor public immutable omniExecutor;
@@ -87,6 +89,7 @@ contract AuthWallet is JWT, RSAPKCS1Verifier, BaseAccount {
                 revert(add(result, 32), mload(result))
             }
         }
+        emit Called();
     }
 
     function entryPoint() public view virtual override returns (IEntryPoint) {

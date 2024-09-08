@@ -5,9 +5,29 @@ import {OApp, Origin, MessagingFee} from "@layerzerolabs/oapp-evm/contracts/oapp
 
 import "./AuthWallet.sol";
 
+interface IAuthWalletFactory {
+    function getDeployedAddress(
+        string memory aud,
+        string memory email,
+        uint256 salt
+    ) external view returns (address);
+
+    function createAccount(
+        string memory aud,
+        string memory email,
+        uint256 salt
+    ) external view returns (address);
+}
+
 contract OmniExecutor is OApp {
+    IAuthWalletFactory public factory;
+
     constructor(address _endpoint, address _owner) OApp(_endpoint, _owner) {
         _transferOwnership(_owner);
+    }
+
+    function setFactory(IAuthWalletFactory _factory) external onlyOwner {
+        factory = _factory;
     }
 
     function send(
@@ -17,7 +37,10 @@ contract OmniExecutor is OApp {
         bytes calldata data,
         bytes calldata _options
     ) external payable {
-        bytes memory _payload = abi.encode(msg.sender, to, value, data);
+        AuthWallet authWallet = AuthWallet(payable(msg.sender));
+        string memory aud = authWallet.aud();
+        string memory email = authWallet.email();
+        bytes memory _payload = abi.encode(aud, email, to, value, data);
         _lzSend(
             _dstEid,
             _payload,
@@ -35,11 +58,24 @@ contract OmniExecutor is OApp {
         bytes calldata
     ) internal override {
         (
-            address payable account,
+            string memory aud,
+            string memory email,
             address to,
             uint256 value,
             bytes memory data
-        ) = abi.decode(payload, (address, address, uint256, bytes));
-        AuthWallet(account).execute(to, value, data);
+        ) = abi.decode(payload, (string, string, address, uint256, bytes));
+        address account = factory.getDeployedAddress(aud, email, 0);
+        if (!isContract(account)) {
+            factory.createAccount(aud, email, 0);
+        }
+        AuthWallet(payable(account)).execute(to, value, data);
+    }
+
+    function isContract(address account) public view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        return size > 0;
     }
 }
