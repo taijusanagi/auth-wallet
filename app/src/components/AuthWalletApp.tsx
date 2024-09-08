@@ -385,8 +385,8 @@ export const AuthWalletApp = () => {
                 AuthWallet 2.5
               </h1>
               <p className="max-w-3xl mx-auto text-2xl text-gray-700">
-                Integrating OAuth2.0, OpenID Connect, JWT, and RSA Verification
-                for Enhanced Account Abstraction Wallet Management
+                Simplifying Wallet Management with OAuth2.0, OpenID Connect,
+                JWT, and RSA Verification and Account Abstraction
               </p>
             </motion.section>
 
