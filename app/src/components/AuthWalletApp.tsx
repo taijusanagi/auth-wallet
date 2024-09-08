@@ -445,13 +445,13 @@ export const AuthWalletApp = () => {
               className="space-y-8"
             >
               <h2 className="text-3xl font-bold text-indigo-600 text-center mb-8">
-                Our Innovative Solution
+                How it works?
               </h2>
               <Card className="bg-white/90 backdrop-blur-sm shadow-lg">
                 <CardContent className="p-8 space-y-6">
                   {[
-                    "Leveraging OAuth2.0 and OpenID Connect within smart contracts.",
-                    "Implementing JWT and RSA signature verification in Account Abstraction Wallets.",
+                    "Leveraging OAuth2.0 and OpenID Connect, with JWT and RSA signature verification seamlessly integrated into Account Abstraction Wallets.",
+                    "AuthWallet 2.5 bridges the gap between Web2 and Web3 by incorporating traditional authentication solutions directly into decentralized smart contracts.",
                   ].map((item, index) => (
                     <motion.div
                       key={index}
