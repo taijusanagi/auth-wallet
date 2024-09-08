@@ -239,8 +239,9 @@ export const AuthWalletApp = () => {
               <h1 className="text-5xl font-bold text-indigo-600 mb-6">
                 AuthWallet
               </h1>
-              <p className="text-2xl text-gray-700">
-                Revolutionizing Wallet Management with Simplicity and Security
+              <p className="max-w-3xl mx-auto text-2xl text-gray-700">
+                Integrating OAuth2.0, OpenID Connect, JWT, and RSA Verification
+                for Enhanced Account Abstraction Wallet Management
               </p>
             </motion.section>
 
@@ -304,9 +305,8 @@ export const AuthWalletApp = () => {
               <Card className="bg-white/90 backdrop-blur-sm shadow-lg">
                 <CardContent className="p-8 space-y-6">
                   {[
-                    "Leveraging OAuth2.0 and OpenID Connect: Web2's gold standard for authorization",
-                    "Smart contracts as Web2 servers: Bringing familiar auth to Account Abstraction wallets",
-                    "Secure on-chain verification: Implementing JWT and RSA in smart contracts",
+                    "Leveraging OAuth2.0 and OpenID Connect within smart contracts.",
+                    "Implementing JWT and RSA signature verification in Account Abstraction Wallets.",
                   ].map((item, index) => (
                     <motion.div
                       key={index}
