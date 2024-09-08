@@ -1,10 +1,12 @@
 "use client";
 
+import { EvmChains, SignProtocolClient, SpMode } from "@ethsign/sp-sdk";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { parseEther } from "viem";
+import { Hex, parseEther } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ export const AuthWalletApp = () => {
   const { openConnectModal } = useConnectModal();
   const { disconnect } = useDisconnect();
   const { isConnected, address } = useAccount();
+
   const { data: walletClient } = useWalletClient();
   const { data: balance } = useBalance({ address });
 
@@ -38,6 +41,7 @@ export const AuthWalletApp = () => {
       const storedEmail = localStorage.getItem("email");
       if (storedEmail) {
         setMyEmail(storedEmail);
+        setSendToEmail(storedEmail);
       }
     }
 
@@ -106,7 +110,28 @@ export const AuthWalletApp = () => {
 
   const handleSendMessage = async () => {};
 
-  const handleSendAttestation = async () => {};
+  const schemaIdWithType = "onchain_evm_84532_0x27e";
+
+  const handleSendAttestation = async () => {
+    const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
+    const to = await baseSepoliaPublicClient.readContract({
+      abi: AuthWalletFactoryAbi,
+      address: baseSepoliaDeployedContractAddress.AuthWalletFactory,
+      functionName: "getDeployedAddress",
+      args: [aud, sendToEmail, BigInt(0)],
+    });
+
+    const schemaId = schemaIdWithType.split("_").pop() as Hex;
+    const client = new SignProtocolClient(SpMode.OnChain, {
+      chain: EvmChains.baseSepolia,
+    });
+    await client.createAttestation({
+      schemaId,
+      recipients: [to],
+      data: { message: attestation },
+      indexingValue: "0x",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
@@ -289,7 +314,20 @@ export const AuthWalletApp = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="attestation">Attestation</Label>
+                  <Label htmlFor="attestation">Sample Schema ID</Label>
+                  <p>
+                    <a
+                      href={`https://testnet-scan.sign.global/schema/${schemaIdWithType}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {schemaIdWithType}
+                    </a>
+                  </p>
+                </div>
+                <div>
+                  <Label htmlFor="attestation">Sample Attestation</Label>
                   <Input
                     id="attestation"
                     placeholder="Attestation to send"

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { baseSepoliaPublicClient } from "@/lib/clients";
 import { sampleJWT } from "@/lib/jwt";
 import { request } from "@/lib/rpc";
+import { truncate } from "@/lib/utils";
 
 import { AuthWalletAbi } from "../../../contracts/abis/AuthWallet";
 import { AuthWalletFactoryAbi } from "../../../contracts/abis/AuthWalletFactory";
@@ -73,7 +74,7 @@ export const SendTransaction = () => {
           const callData = encodeFunctionData({
             abi: AuthWalletAbi,
             functionName: "execute",
-            args: [to, value, data],
+            args: [to, value ? value : BigInt(0), data ? data : "0x"],
           });
           console.log("callData", callData);
 
@@ -182,17 +183,26 @@ export const SendTransaction = () => {
       <div className="flex flex-col">
         <span className="font-semibold text-sm">Value:</span>
         <span className="text-sm break-all">
-          {formatEther(fromHex(value as Hex, "bigint"))} ETH
+          {value ? formatEther(fromHex(value as Hex, "bigint")) : "0"} ETH
         </span>
       </div>
       <div className="flex flex-col">
         <span className="font-semibold text-sm">Data:</span>
-        <span className="text-sm break-all">{data}</span>
+        <span className="text-sm break-all">{truncate(data, 60)}</span>
       </div>
       {userOpHash && (
         <div className="flex flex-col">
           <span className="font-semibold text-sm">UserOpHash:</span>
-          <span className="text-sm break-all">{userOpHash}</span>
+          <span className="text-sm break-all">
+            <a
+              href={`https://jiffyscan.xyz/userOpHash/${userOpHash}?network=base-sepolia`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {userOpHash}
+            </a>
+          </span>
         </div>
       )}
     </div>
@@ -318,7 +328,16 @@ export const SendTransaction = () => {
                   <span className="font-semibold text-sm">
                     Transaction Hash:
                   </span>
-                  <span className="text-sm break-all"> {transactionHash}</span>
+                  <span className="text-sm break-all">
+                    <a
+                      href={`https://sepolia.basescan.org//tx/${transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {transactionHash}
+                    </a>
+                  </span>
                 </div>
                 <Button
                   onClick={handleClose}

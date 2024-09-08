@@ -22,7 +22,7 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "Auth Wallet Sandbox",
+    appName: "AuthWallet Sandbox",
     projectId,
   },
 );

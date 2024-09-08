@@ -12,6 +12,7 @@ export const authWalletConnector = () => {
 
       async connect() {
         await provider.init();
+        window.ethereum = provider;
         const accounts = await provider.request({ method: "eth_accounts" });
         return { accounts, chainId };
       },
