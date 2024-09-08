@@ -151,19 +151,6 @@ export const AuthWalletApp = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div>
-                    <Label>Contract URL:</Label>
-                    <div className="text-xs lg:text-sm break-all">
-                      <a
-                        href={contractUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {contractUrl}
-                      </a>
-                    </div>
-                  </div>
-                  <div>
                     <Label>JWKS URL:</Label>
                     <div className="text-xs lg:text-sm break-all">
                       <a
@@ -177,7 +164,20 @@ export const AuthWalletApp = () => {
                     </div>
                   </div>
                   <div>
-                    <Label>Oracle Status:</Label>
+                    <Label>Oracle URL:</Label>
+                    <div className="text-xs lg:text-sm break-all">
+                      <a
+                        href={contractUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {contractUrl}
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Status:</Label>
                     <div
                       className={`text-xs lg:text-sm font-semibold ${oracleStatus === "Good" ? "text-green-600" : "text-red-600"}`}
                     >
