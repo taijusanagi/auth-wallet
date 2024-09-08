@@ -30,6 +30,9 @@ export const AuthWalletApp = () => {
 
   const [oracleStatus, setOracleStatus] = useState("Loading...");
 
+  const [message, setMessage] = useState("");
+  const [attestation, setAttestation] = useState("");
+
   useEffect(() => {
     if (isConnected) {
       const storedEmail = localStorage.getItem("email");
@@ -100,6 +103,10 @@ export const AuthWalletApp = () => {
 
   const contractUrl = `https://sepolia.basescan.org/address/${baseSepoliaDeployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
   const certUrl = "https://www.googleapis.com/oauth2/v3/certs";
+
+  const handleSendMessage = async () => {};
+
+  const handleSendAttestation = async () => {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
@@ -191,7 +198,7 @@ export const AuthWalletApp = () => {
 
             <Card className="bg-white/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle>Send ETH by Email</CardTitle>
+                <CardTitle>Benefit 1: Send ETH by Email</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -224,6 +231,79 @@ export const AuthWalletApp = () => {
                   className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   Send ETH
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Benefit 2: Send XMTP Message by Email</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="sendToEmail">Recipient Email:</Label>
+                  <Input
+                    id="sendToEmail"
+                    type="email"
+                    placeholder="Enter recipient's email address"
+                    value={sendToEmail}
+                    onChange={(e) => setSendToEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="message">Message:</Label>
+                  <Input
+                    id="message"
+                    type="text"
+                    placeholder="Message to send"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!message}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Send Message
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>
+                  Benefit 3: Send Sign Protocol Attestation by Email
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="sendToEmail">Recipient Email:</Label>
+                  <Input
+                    id="sendToEmail"
+                    type="email"
+                    placeholder="Enter recipient's email address"
+                    value={sendToEmail}
+                    onChange={(e) => setSendToEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="attestation">Attestation</Label>
+                  <Input
+                    id="attestation"
+                    placeholder="Attestation to send"
+                    value={attestation}
+                    onChange={(e) => setAttestation(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <Button
+                  onClick={handleSendAttestation}
+                  disabled={!attestation}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Send Attestation
                 </Button>
               </CardContent>
             </Card>
