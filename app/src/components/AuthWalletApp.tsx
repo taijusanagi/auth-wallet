@@ -173,7 +173,9 @@ export const AuthWalletApp = () => {
             onClick={() => disconnect()}
           >
             <Wallet className="text-indigo-600 mr-2" size={24} />
-            <h1 className="text-2xl font-bold text-indigo-600">AuthWallet</h1>
+            <h1 className="text-2xl font-bold text-indigo-600">
+              AuthWallet 2.5
+            </h1>
           </div>
           <ConnectButton
             showBalance={false}
@@ -380,7 +382,7 @@ export const AuthWalletApp = () => {
             >
               <Wallet className="inline-block text-indigo-600 mb-6" size={80} />
               <h1 className="text-5xl font-bold text-indigo-600 mb-6">
-                AuthWallet
+                AuthWallet 2.5
               </h1>
               <p className="max-w-3xl mx-auto text-2xl text-gray-700">
                 Integrating OAuth2.0, OpenID Connect, JWT, and RSA Verification
@@ -474,7 +476,7 @@ export const AuthWalletApp = () => {
                   </h3>
                   <p className="mb-6 text-indigo-100">
                     Connect your wallet and start your journey with AuthWallet
-                    today!
+                    2.5 today!
                   </p>
                   <Button
                     onClick={handleConnect}

@@ -39,7 +39,7 @@ export const Connect = () => {
       <header className="bg-white/90 backdrop-blur-sm shadow-md rounded-2xl">
         <div className="px-6 py-4 flex justify-center items-center">
           <Wallet className="text-indigo-600 mr-2" size={24} />
-          <h1 className="text-2xl font-bold text-indigo-600">AuthWallet</h1>
+          <h1 className="text-2xl font-bold text-indigo-600">AuthWallet 2.5</h1>
         </div>
       </header>
 
