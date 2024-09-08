@@ -106,10 +106,11 @@ export const AuthWalletApp = () => {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div
-            className="text-2xl font-bold text-indigo-600 cursor-pointer"
+            className="flex justify-center items-center"
             onClick={() => disconnect()}
           >
-            AuthWallet
+            <Wallet className="text-indigo-600 mr-2" size={24} />
+            <h1 className="text-2xl font-bold text-indigo-600">AuthWallet</h1>
           </div>
           <ConnectButton
             showBalance={false}
