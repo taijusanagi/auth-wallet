@@ -4,7 +4,14 @@ import { EvmChains, SignProtocolClient, SpMode } from "@ethsign/sp-sdk";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
-import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  HelpCircle,
+  Lightbulb,
+  Shield,
+  Wallet,
+  X,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -68,6 +75,9 @@ export const AuthWalletApp = () => {
       if (storedEmail) {
         setMyEmail(storedEmail);
       }
+
+      // scroll to top
+      window.scrollTo(0, 0);
     }
 
     fetch("https://www.googleapis.com/oauth2/v3/certs")
@@ -180,6 +190,8 @@ export const AuthWalletApp = () => {
     setOmniExecuteTxHash(hash);
   };
 
+  const [showJWKSImage, setShowJWKSImage] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-300">
       <header className="bg-white shadow-sm">
@@ -232,8 +244,15 @@ export const AuthWalletApp = () => {
               </Card>
 
               <Card className="bg-white/80 backdrop-blur-sm">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle>JWKS Oracle Information</CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowJWKSImage(!showJWKSImage)}
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div>
@@ -278,7 +297,11 @@ export const AuthWalletApp = () => {
                   <div>
                     <Label>Status:</Label>
                     <div
-                      className={`text-xs lg:text-sm font-semibold ${oracleStatus === "Good" ? "text-green-600" : "text-red-600"}`}
+                      className={`text-xs lg:text-sm font-semibold ${
+                        oracleStatus === "Good"
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
                     >
                       {oracleStatus}
                     </div>
@@ -624,6 +647,27 @@ export const AuthWalletApp = () => {
           </p>
         </div>
       </footer>
+      {showJWKSImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-5xl w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">How JWKS Oracle Works</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowJWKSImage(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <img
+              src="/how-it-works.png"
+              alt="JWKS Oracle Diagram"
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
