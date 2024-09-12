@@ -139,6 +139,8 @@ export const SendTransaction = () => {
           userOp.preVerificationGas = preVerificationGas;
           userOp.verificationGasLimit = verificationGasLimit;
 
+          console.log("userOp", userOp);
+
           const userOpHash = await baseSepoliaPublicClient.readContract({
             abi: EntryPointAbi,
             address: entryPointAddress,
@@ -176,6 +178,10 @@ export const SendTransaction = () => {
 
   const TransactionPreview = () => (
     <div className="mb-4 text-left space-y-2">
+      <div className="flex flex-col">
+        <span className="font-semibold text-sm">Executed At:</span>
+        <span className="text-sm break-all">Base Sepolia</span>
+      </div>
       <div className="flex flex-col">
         <span className="font-semibold text-sm">To:</span>
         <span className="text-sm break-all">{to}</span>
