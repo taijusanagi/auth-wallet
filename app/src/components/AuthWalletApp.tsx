@@ -38,7 +38,7 @@ export const AuthWalletApp = () => {
   const [sendToEmail, setSendToEmail] = useState(
     "no-web3-wallet-holder@gmail.com",
   );
-  const [sendAmount, setSendAmount] = useState("");
+  // const [sendAmount, setSendAmount] = useState("");
   const [myEmail, setMyEmail] = useState("");
 
   const [oracleStatus, setOracleStatus] = useState("Loading...");
@@ -96,24 +96,24 @@ export const AuthWalletApp = () => {
       });
   }, [isConnected]);
 
-  const handleSendETH = async () => {
-    if (!walletClient) {
-      throw new Error("No wallet client");
-    }
-    if (!sendToEmail) {
-      throw new Error("Please enter recipient's email address");
-    }
-    if (!sendAmount || parseFloat(sendAmount) <= 0) {
-      throw new Error("Please enter a valid amount to send");
-    }
-    const hash = await walletClient.sendTransaction({
-      to,
-      value: parseEther(sendAmount),
-      data: "0x",
-    });
-    console.log("hash", hash);
-    console.log("Sending", sendAmount, "ETH to:", sendToEmail);
-  };
+  // const handleSendETH = async () => {
+  //   if (!walletClient) {
+  //     throw new Error("No wallet client");
+  //   }
+  //   if (!sendToEmail) {
+  //     throw new Error("Please enter recipient's email address");
+  //   }
+  //   if (!sendAmount || parseFloat(sendAmount) <= 0) {
+  //     throw new Error("Please enter a valid amount to send");
+  //   }
+  //   const hash = await walletClient.sendTransaction({
+  //     to,
+  //     value: parseEther(sendAmount),
+  //     data: "0x",
+  //   });
+  //   console.log("hash", hash);
+  //   console.log("Sending", sendAmount, "ETH to:", sendToEmail);
+  // };
 
   const handleConnect = () => {
     if (openConnectModal) {
