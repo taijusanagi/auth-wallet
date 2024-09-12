@@ -6,7 +6,13 @@ import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { motion } from "framer-motion";
 import { ArrowRight, Lightbulb, Shield, Wallet } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Hex, encodeFunctionData, parseEther, zeroAddress } from "viem";
+import {
+  Address,
+  Hex,
+  encodeFunctionData,
+  parseEther,
+  zeroAddress,
+} from "viem";
 import { useAccount, useBalance, useDisconnect, useWalletClient } from "wagmi";
 
 import { Button } from "@/components/ui/button";
@@ -29,21 +35,38 @@ export const AuthWalletApp = () => {
   const { data: walletClient } = useWalletClient();
   const { data: balance } = useBalance({ address });
 
-  const [sendToEmail, setSendToEmail] = useState("");
+  const [sendToEmail, setSendToEmail] = useState(
+    "no-web3-wallet-holder@gmail.com",
+  );
   const [sendAmount, setSendAmount] = useState("");
   const [myEmail, setMyEmail] = useState("");
 
   const [oracleStatus, setOracleStatus] = useState("Loading...");
 
-  const [attestation, setAttestation] = useState("");
+  const [attestation, setAttestation] = useState("EthOnline 2024 Attendee");
   const [omniExecuteTxHash, setOmniExecuteTxHash] = useState("");
+
+  const [to, setTo] = useState<Address>("0x");
+
+  useEffect(() => {
+    const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
+    baseSepoliaPublicClient
+      .readContract({
+        abi: AuthWalletFactoryAbi,
+        address: deployedContractAddress.AuthWalletFactory,
+        functionName: "getDeployedAddress",
+        args: [aud, sendToEmail, BigInt(0)],
+      })
+      .then((to) => {
+        setTo(to);
+      });
+  }, [sendToEmail]);
 
   useEffect(() => {
     if (isConnected) {
       const storedEmail = localStorage.getItem("email");
       if (storedEmail) {
         setMyEmail(storedEmail);
-        setSendToEmail(storedEmail);
       }
     }
 
@@ -83,15 +106,6 @@ export const AuthWalletApp = () => {
     if (!sendAmount || parseFloat(sendAmount) <= 0) {
       throw new Error("Please enter a valid amount to send");
     }
-
-    const aud = process.env.NEXT_PUBLIC_CLIENT_ID || "";
-    const to = await baseSepoliaPublicClient.readContract({
-      abi: AuthWalletFactoryAbi,
-      address: deployedContractAddress.AuthWalletFactory,
-      functionName: "getDeployedAddress",
-      args: [aud, sendToEmail, BigInt(0)],
-    });
-
     const hash = await walletClient.sendTransaction({
       to,
       value: parseEther(sendAmount),
@@ -107,7 +121,9 @@ export const AuthWalletApp = () => {
     }
   };
 
-  const contractUrl = `https://sepolia.basescan.org/address/${deployedContractAddress.JWKSAutomatedOracle}`; // Replace with actual contract URL
+  const functionUrl = "https://functions.chain.link/base-sepolia/170";
+  const automateUrl =
+    "https://automation.chain.link/base-sepolia/92567105130128017370582699532272670870390868578143540381853552263646221229564";
   const certUrl = "https://www.googleapis.com/oauth2/v3/certs";
 
   const schemaIdWithType = "onchain_evm_84532_0x27e";
@@ -165,7 +181,7 @@ export const AuthWalletApp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-300">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div
@@ -185,10 +201,10 @@ export const AuthWalletApp = () => {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isConnected ? (
           <>
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 gap-6 mb-16">
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Wallet Information</CardTitle>
@@ -207,6 +223,10 @@ export const AuthWalletApp = () => {
                   <div>
                     <Label>Your Email:</Label>
                     <div>{myEmail}</div>
+                  </div>
+                  <div>
+                    <Label>Identity Provider:</Label>
+                    <div>Google</div>
                   </div>
                 </CardContent>
               </Card>
@@ -230,15 +250,28 @@ export const AuthWalletApp = () => {
                     </div>
                   </div>
                   <div>
-                    <Label>Oracle URL:</Label>
+                    <Label>Chainlink Functions URL:</Label>
                     <div className="text-xs lg:text-sm break-all">
                       <a
-                        href={contractUrl}
+                        href={functionUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
                       >
-                        {contractUrl}
+                        {functionUrl}
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Chainlink Automation URL:</Label>
+                    <div className="text-xs lg:text-sm break-all">
+                      <a
+                        href={automateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {automateUrl}
                       </a>
                     </div>
                   </div>
@@ -253,8 +286,12 @@ export const AuthWalletApp = () => {
                 </CardContent>
               </Card>
             </div>
-
-            <Card className="bg-white/80 backdrop-blur-sm">
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-indigo-600 text-center">
+                Use Cases with Automatic Onboarding
+              </h2>
+            </div>
+            {/* <Card className="bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>Benefit 1: Send ETH by Email</CardTitle>
               </CardHeader>
@@ -267,6 +304,18 @@ export const AuthWalletApp = () => {
                     placeholder="Enter recipient's email address"
                     value={sendToEmail}
                     onChange={(e) => setSendToEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sendToEmail">
+                    Calculated Wallet Address:
+                  </Label>
+                  <Input
+                    id="toAddress"
+                    type="text"
+                    value={to}
+                    disabled={true}
                     className="mt-1"
                   />
                 </div>
@@ -291,11 +340,11 @@ export const AuthWalletApp = () => {
                   Send ETH
                 </Button>
               </CardContent>
-            </Card>
-            <Card className="bg-white/80 backdrop-blur-sm">
+            </Card> */}
+            <Card className="bg-white/80 backdrop-blur-sm mb-8">
               <CardHeader>
                 <CardTitle>
-                  Benefit 2: Send Sign Protocol Attestation by Email
+                  Use Case 1: Send Sign Protocol Attestation by Email
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -307,6 +356,18 @@ export const AuthWalletApp = () => {
                     placeholder="Enter recipient's email address"
                     value={sendToEmail}
                     onChange={(e) => setSendToEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sendToEmail">
+                    Calculated Wallet Address:
+                  </Label>
+                  <Input
+                    id="toAddress"
+                    type="text"
+                    value={to}
+                    disabled={true}
                     className="mt-1"
                   />
                 </div>
@@ -344,21 +405,45 @@ export const AuthWalletApp = () => {
             </Card>
             <Card className="bg-white/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle>Benefit 3: OmniExecution</CardTitle>
+                <CardTitle>
+                  Use Case 2: Omni Account Abstraction Execution with LayerZero
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Please make sure your account is already created in Optimism
-                  Sepolia.
-                </p>
+                {/* Disabled Select Box */}
+                <div>
+                  <label
+                    htmlFor="destination-chain"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Destination Chain
+                  </label>
+                  <select
+                    id="destination-chain"
+                    name="destination-chain"
+                    // disabled
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  >
+                    <option>Optimism Sepolia</option>
+                  </select>
+                </div>
+
                 <Button
                   onClick={handleOmniExecute}
                   className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   Test Omni Execution
                 </Button>
+                <p className="text-sm text-gray-600 font-semibold">
+                  AuthWallet 2.5 contracts are deployed omnichain, allowing
+                  users to maintain the same wallet address across multiple
+                  chains, meaning they are onboarded to all EVM chains
+                  simultaneously without any action. Our omnichain execution
+                  environment enables seamless transactions between chains,
+                  while eliminating the complexity of gas fee management.
+                </p>
                 {omniExecuteTxHash && (
-                  <div className="mt-4">
+                  <div>
                     <a
                       href={`https://testnet.layerzeroscan.com/tx/${omniExecuteTxHash}`}
                       target="_blank"
@@ -438,6 +523,40 @@ export const AuthWalletApp = () => {
               </div>
             </section>
 
+            <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-indigo-600 text-center">
+                How it works?
+              </h2>
+              <Card className="bg-white/90 backdrop-blur-sm shadow-lg overflow-hidden">
+                <CardContent className="p-6">
+                  <h3 className="text-2xl font-semibold text-indigo-600 mb-4">
+                    Usual Social Login Wallet
+                  </h3>
+                  <div className="relative aspect-video">
+                    <img
+                      src="/social-login-diagram.png"
+                      alt="Social Login Wallet Diagram"
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/90 backdrop-blur-sm shadow-lg overflow-hidden">
+                <CardContent className="p-6">
+                  <h3 className="text-2xl font-semibold text-indigo-600 mb-4">
+                    AuthWallet 2.5
+                  </h3>
+                  <div className="relative aspect-video">
+                    <img
+                      src="/auth-wallet-diagram.png"
+                      alt="AuthWallet 2.5 Diagram"
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -445,13 +564,14 @@ export const AuthWalletApp = () => {
               className="space-y-8"
             >
               <h2 className="text-3xl font-bold text-indigo-600 text-center mb-8">
-                How it works?
+                Benefits
               </h2>
               <Card className="bg-white/90 backdrop-blur-sm shadow-lg">
                 <CardContent className="p-8 space-y-6">
                   {[
-                    "Leveraging OAuth2.0 and OpenID Connect, with JWT and RSA signature verification seamlessly integrated into Account Abstraction Wallets.",
-                    "AuthWallet 2.5 bridges the gap between Web2 and Web3 by incorporating traditional authentication solutions directly into decentralized smart contracts.",
+                    "Simplicity: No need to manage complex keys or passwords.",
+                    "Trust Model: No need to trust any additional services beyond what you already trust for Gmail.",
+                    "Automatic Onboarding: Wallet address is generated from email address before users even sign in, and holding assets are accessed any time later. All Gmail holders are already onboarded.",
                   ].map((item, index) => (
                     <motion.div
                       key={index}
@@ -469,7 +589,7 @@ export const AuthWalletApp = () => {
             </motion.section>
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Card className="bg-indigo-600 text-white text-center shadow-xl">
+              <Card className="bg-indigo-600 text-white text-center shadow-xl border border-indigo-400">
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-bold mb-4">
                     Ready to Experience the Future of Wallet Management?

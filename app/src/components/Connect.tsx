@@ -44,7 +44,7 @@ export const Connect = () => {
       </header>
 
       <main className="flex-grow flex flex-col justify-center items-center p-4">
-        <Card className="w-full max-w-sm bg-white/80 backdrop-blur-sm shadow-lg">
+        <Card className="w-full max-w-sm bg-white/80 backdrop-blur-sm shadow-lg mb-8">
           <CardHeader>
             <CardTitle className="text-center text-xl text-indigo-700">
               Connect Your Wallet
@@ -78,6 +78,10 @@ export const Connect = () => {
             </div>
           </CardContent>
         </Card>
+        <p className="flex justify-center items-center text-sm text-blue-800">
+          ※ AuthWallet 2.5 is an EIP-1193-compatible wallet. It integrates
+          seamlessly with viem, wagmi, and RainbowKit, making it easy to use.
+        </p>
       </main>
     </div>
   );
