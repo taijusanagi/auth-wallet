@@ -191,6 +191,7 @@ export const AuthWalletApp = () => {
   };
 
   const [showJWKSImage, setShowJWKSImage] = useState(false);
+  const [showOmnichainImage, setShowOmnichainImage] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-300">
@@ -246,13 +247,10 @@ export const AuthWalletApp = () => {
               <Card className="bg-white/80 backdrop-blur-sm">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle>JWKS Oracle Information</CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <HelpCircle
+                    className="h-4 w-4 cursor-pointer"
                     onClick={() => setShowJWKSImage(!showJWKSImage)}
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </Button>
+                  />
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div>
@@ -427,10 +425,14 @@ export const AuthWalletApp = () => {
               </CardContent>
             </Card>
             <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>
                   Use Case 2: Omni Account Abstraction Execution with LayerZero
                 </CardTitle>
+                <HelpCircle
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={() => setShowOmnichainImage(!showOmnichainImage)}
+                />
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Disabled Select Box */}
@@ -663,6 +665,29 @@ export const AuthWalletApp = () => {
             <img
               src="/how-it-works.png"
               alt="JWKS Oracle Diagram"
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+      )}
+      {showOmnichainImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-5xl w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">
+                How Omnichain Execution Works
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowOmnichainImage(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <img
+              src="/omnichain.png"
+              alt="Omnichain Diagram"
               className="w-full h-auto"
             />
           </div>
