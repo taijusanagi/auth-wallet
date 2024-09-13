@@ -1,6 +1,6 @@
-Hi there! I'm Taiju, and this is AuthWallet 2.5—a solution that simplifies wallet management by using OAuth2.0, OpenID Connect, JWT, RSA verification, and account abstraction.
+Hi there! I'm Taiju, and this is AuthWallet 2.5—a solution that simplifies wallet management by using OOpenID Connect and account abstraction.
 
-Here’s how it works:
+Here’s how AuthWallet 2.5 bridges the gap between Web2 and Web3. The "2.5" shows our new approach, combining the ease of Web2 with the power of Web3 for a seamless and secure experience.
 
 In most social login wallets, after signing in with an Identity Provider (IdP) like Google, the ID token is used to access a Key Management Service (KMS), which manages an additional key. Users have to trust the wallet provider to manage this key securely.
 
