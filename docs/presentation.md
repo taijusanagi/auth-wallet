@@ -8,7 +8,7 @@ With AuthWallet 2.5, we eliminate the need for this extra key management. Instea
 
 The key advantages of AuthWallet 2.5 are simplicity, an improved trust model, and automatic onboarding.
 
-A wallet address is generated from the user’s email address even before they sign in, and they can access their assets at any time. So with AuthWallet 2.5, users don’t even need to create a wallet—it’s already there, ready for them. This pre-onboarding approach removes a significant adoption barrier for the Ethereum ecosystem.
+A wallet address is generated from the user’s email address even before they sign in, and they can access their assets at any time. So with AuthWallet 2.5, users don’t even need to create a wallet—it’s already there, ready for them. This onboarding approach removes a significant adoption barrier for the Ethereum ecosystem.
 
 Now, let’s dive into the demonstration!
 
@@ -28,6 +28,6 @@ Now, let’s create a transaction from Base Sepolia to Optimism Sepolia.
 
 The transaction is created and the signature is verified on Base Sepolia, then the actual account abstraction transaction is sent to Optimism Sepolia via LayerZero. It might take a moment... so let's check the already delivered transaction. The sample event was triggered in AuthWallet 2.5 on Optimism Sepolia, and the address matches the one from Base Sepolia.
 
-This demonstrates how AuthWallet 2.5’s pre-onboarding mechanism allows users to automatically access all EVM chains and create transactions across chains without the need to manage asset and gas-fee transfers.
+This demonstrates how AuthWallet 2.5’s onboarding mechanism allows users to automatically access all EVM chains and create transactions across chains without the need to manage asset and gas-fee transfers.
 
 That wraps up everything about AuthWallet 2.5. Thank you so much for your time!
