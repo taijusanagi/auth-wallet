@@ -2,11 +2,13 @@ Hi there! I'm Taiju, and this is AuthWallet 2.5—a solution that simplifies wal
 
 Here’s how AuthWallet 2.5 bridges the gap between Web2 and Web3.
 
-In most social login wallets, after signing in with an Identity Provider (IdP) like Google, the ID token is used to access a Key Management Service (KMS), which manages an additional key. Users have to trust the wallet provider to manage this key securely.
+In most social login wallets, after signing in with an Identity Provider (IdP) like Google, the ID token is used to access a Key Management Service (KMS), which manages an additional key.
 
 With AuthWallet 2.5, we eliminate the need for this extra key management. Instead, the user signs in with an IdP, and the ID token is used directly in the smart contract to send transactions.
 
-The key advantage of AuthWallet 2.5 is automatic onboarding. A wallet address is generated from the user’s email address even before they sign in, and they can access their assets at any time. So with AuthWallet 2.5, users don’t even need to create a wallet—it’s already there, ready for them. This pre-onboarding approach removes a significant adoption barrier for the Ethereum ecosystem.
+The key advantages of AuthWallet 2.5 are simplicity, an improved trust model, and automatic onboarding.
+
+A wallet address is generated from the user’s email address even before they sign in, and they can access their assets at any time. So with AuthWallet 2.5, users don’t even need to create a wallet—it’s already there, ready for them. This pre-onboarding approach removes a significant adoption barrier for the Ethereum ecosystem.
 
 Now, let’s dive into the demonstration!
 
